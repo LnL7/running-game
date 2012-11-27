@@ -1,8 +1,9 @@
 #lang racket/base
-(require "velocity.rkt")
-(require "position.rkt")
-(provide (all-from-out "velocity.rkt"
-                       "position.rkt")
+(require "velocity.rkt"
+         "position.rkt")
+(provide (all-from-out
+           "velocity.rkt"
+           "position.rkt")
          MakeEllipse
          MakeRectangle)
 
@@ -35,6 +36,7 @@
         ((eq? msg 'width)    get_width)
         ((eq? msg 'height)   get_height)
         ((eq? msg 'render)   render)
+        ((eq? msg 'update!)  update!)
         (else
           (error "method missing ~a" dispatch))))
 
@@ -46,6 +48,9 @@
 
     (define (render engine)
       (send engine type dispatch color))
+
+    (define (update! engine)
+      (send engine type dispatch))
 
     dispatch))
 

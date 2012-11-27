@@ -4,9 +4,9 @@
 
 
 
-(define display (MakeConsole))
-
-(let* ((pos    (MakePosition 10 10))
-       (vel    (MakeVelocity 0 1))
-       (circle (MakeEllipse pos vel 6 3 'red)))
-  (send circle 'render display))
+(let* ((pos (MakePosition 10 10))
+       (vel (MakeVelocity 0 1))
+       (w 5)
+       (h 6)
+       (ellipse (MakeEllipse pos vel w h 'red)))
+  (send ellipse 'render (MakeConsole)))
