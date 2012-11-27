@@ -35,7 +35,7 @@
       (set! _y (+ (send vel 'vertical) _y))
       dispatch)
 
-    (define (render d)
-      (send d 'position dispatch))
+    (define (render engine)
+      (send engine 'position dispatch))
 
     dispatch))

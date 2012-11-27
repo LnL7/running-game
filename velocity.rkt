@@ -32,8 +32,8 @@
         (set! _vertical   (+ (send vel 'vertical) _vertical))
         dispatch)
 
-      (define (render d)
-        (send d 'velocity dispatch))
+      (define (render engine)
+        (send engine 'velocity dispatch))
 
       dispatch))
 
