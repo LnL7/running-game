@@ -13,9 +13,10 @@
         ((eq? msg 'velocity)  velocity)
         ((eq? msg 'ellipse)   shape_ellipse)
         ((eq? msg 'rectangle) shape_rectangle)
+        ((eq? msg 'score)     score)
         ((eq? msg 'warning)   warning)
         (else
-          (error "method missing ~a" dispatch))))
+          (error msg "method missing ~a" dispatch))))
 
     (define (position pos)
       (let ((x (send pos 'x))
@@ -73,6 +74,20 @@
         (display height)
         (position pos)
         (velocity vel)
+        (dedent!)))
+
+    (define (score score)
+      (let ((curr (send score 'current))
+            (high (send score 'highest)))
+        (scope)
+        (display "Score:")
+        (indent!)
+        (scope)
+        (display "_c: ")
+        (display curr)
+        (scope)
+        (display "_h: ")
+        (display high)
         (dedent!)))
 
     (define (warning str)
