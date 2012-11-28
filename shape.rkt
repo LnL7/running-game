@@ -38,7 +38,7 @@
         ((eq? msg 'render)   render)
         ((eq? msg 'update!)  update!)
         (else
-          (error "method missing ~a" dispatch))))
+          (error msg "method missing ~a" dispatch))))
 
     (define (get_type)     _type)
     (define (get_position) _position)

@@ -10,10 +10,6 @@
   (let ((position (MakePosition 1 2)))
     (check-eq? (send position 'x) 1)
     (check-eq? (send position 'y) 2)
-    (send position 'x! 2)
-    (send position 'y! 1)
-    (check-eq? (send position 'x) 2)
-    (check-eq? (send position 'y) 1)
     (check-exn
       exn:fail?
       (lambda () (send position 'foobar)))))
@@ -33,3 +29,14 @@
     (send position 'move! vel)
     (check-eq? (send position 'x) 2)
     (check-eq? (send position 'y) 4)))
+
+
+(test-case
+  "Position.copy"
+  (let* ((x 3)
+         (y 4)
+         (position (MakePosition x y))
+         (pos_copy (send position 'copy)))
+    (send pos_copy 'move! (MakeVelocity 1 2))
+    (check-eq? (send position 'x) x)
+    (check-eq? (send position 'y) y)))

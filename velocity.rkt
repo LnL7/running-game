@@ -12,14 +12,17 @@
       (cond
         ((eq? msg 'horizontal) get_horizontal)
         ((eq? msg 'vertical)   get_vertical)
+        ((eq? msg 'copy)       copy_velocity)
         ((eq? msg 'scale!)     scale_number!)
         ((eq? msg 'add!)       add_velocity!)
         ((eq? msg 'render)     render)
         (else
-          (error "method missing ~a" dispatch))))
+          (error msg "method missing ~a" dispatch))))
 
       (define (get_horizontal) _horizontal)
       (define (get_vertical)   _vertical)
+
+      (define (copy_velocity) (MakeVelocity _horizontal _vertical))
 
       (define (scale_number! scale)
         (unless (= scale 1)
