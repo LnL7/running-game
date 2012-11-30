@@ -6,9 +6,9 @@
 
 
 (let ((score (MakeScore)))
-  (send score 'add)
-  (send score 'add)
-  (send score 'add)
-  (send score 'end)
-  (send score 'add)
-  (send score 'render (MakeConsole)))
+  (score 'add)
+  (score 'add)
+  (score 'add)
+  (score 'end)
+  (score 'add)
+  (score 'render (MakeConsole)))

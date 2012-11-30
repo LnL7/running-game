@@ -5,4 +5,4 @@
 
 
 (let ((position (MakePosition 5 10)))
-  (send position 'render (MakeConsole)))
+  (position 'render (MakeConsole)))

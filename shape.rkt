@@ -1,9 +1,8 @@
 #lang racket/base
 (require "velocity.rkt"
          "position.rkt")
-(provide (all-from-out
-           "velocity.rkt"
-           "position.rkt")
+(provide (all-from-out "velocity.rkt"
+                       "position.rkt")
          MakeEllipse
          MakeRectangle)
 
@@ -28,17 +27,19 @@
         (_velocity velocity)
         (_width    width)
         (_height   height))
-    (define (dispatch msg)
-      (cond
-        ((eq? msg 'type)     get_type)
-        ((eq? msg 'position) get_position)
-        ((eq? msg 'velocity) get_velocity)
-        ((eq? msg 'width)    get_width)
-        ((eq? msg 'height)   get_height)
-        ((eq? msg 'render)   render)
-        ((eq? msg 'update!)  update!)
-        (else
-          (error msg "method missing ~a" dispatch))))
+    (define (dispatch msg . args)
+      (apply
+        (cond
+          ((eq? msg 'type)     get_type)
+          ((eq? msg 'position) get_position)
+          ((eq? msg 'velocity) get_velocity)
+          ((eq? msg 'width)    get_width)
+          ((eq? msg 'height)   get_height)
+          ((eq? msg 'render)   render)
+          ((eq? msg 'update!)  update!)
+          (else
+            (error msg "method missing ~a" dispatch)))
+        args))
 
     (define (get_type)     _type)
     (define (get_position) _position)
@@ -47,10 +48,10 @@
     (define (get_height)   _height)
 
     (define (render engine)
-      (send engine type dispatch color))
+      (engine type dispatch color))
 
     (define (update! engine)
-      (send engine type dispatch))
+      (engine type dispatch))
 
     dispatch))
 

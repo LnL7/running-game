@@ -1,26 +1,26 @@
 #lang racket/base
-(require "helpers.rkt")
-(provide (all-from-out "helpers.rkt")
-         MakeConsole)
+(provide MakeConsole)
 
 
 
 (define (MakeConsole)
   (let ((_scope 0))
-    (define (dispatch msg)
-      (cond
-        ((eq? msg 'position)  position)
-        ((eq? msg 'velocity)  velocity)
-        ((eq? msg 'ellipse)   shape_ellipse)
-        ((eq? msg 'rectangle) shape_rectangle)
-        ((eq? msg 'score)     score)
-        ((eq? msg 'warning)   warning)
-        (else
-          (error msg "method missing ~a" dispatch))))
+    (define (dispatch msg . args)
+      (apply
+        (cond
+          ((eq? msg 'position)  position)
+          ((eq? msg 'velocity)  velocity)
+          ((eq? msg 'ellipse)   shape_ellipse)
+          ((eq? msg 'rectangle) shape_rectangle)
+          ((eq? msg 'score)     score)
+          ((eq? msg 'warning)   warning)
+          (else
+            (error msg "method missing ~a" dispatch)))
+        args))
 
     (define (position pos)
-      (let ((x (send pos 'x))
-            (y (send pos 'y)))
+      (let ((x (pos 'x))
+            (y (pos 'y)))
         (scope)
         (display "Position:")
         (indent!)
@@ -33,8 +33,8 @@
         (dedent!)))
 
     (define (velocity vel)
-      (let ((horizontal (send vel 'horizontal))
-            (vertical   (send vel 'vertical)))
+      (let ((horizontal (vel 'horizontal))
+            (vertical   (vel 'vertical)))
         (scope)
         (display "Velocity:")
         (indent!)
@@ -61,10 +61,10 @@
       (shape rectangle))
 
     (define (shape shape)
-      (let ((pos    (send shape 'position))
-            (vel    (send shape 'velocity))
-            (width  (send shape 'width))
-            (height (send shape 'height)))
+      (let ((pos    (shape 'position))
+            (vel    (shape 'velocity))
+            (width  (shape 'width))
+            (height (shape 'height)))
         (indent!)
         (scope)
         (display "_w = ")
@@ -77,8 +77,8 @@
         (dedent!)))
 
     (define (score score)
-      (let ((curr (send score 'current))
-            (high (send score 'highest)))
+      (let ((curr (score 'current))
+            (high (score 'highest)))
         (scope)
         (display "Score:")
         (indent!)
