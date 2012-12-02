@@ -3,22 +3,23 @@
          "position.rkt")
 (provide (all-from-out "velocity.rkt"
                        "position.rkt")
+         MakePoint
          MakeEllipse
          MakeRectangle)
 
 
 
 (define (MakeEllipse position velocity width height . opts)
-  (let ((color (if (null? opts)
-                 color_black
-                 (car opts))))
+  (let ((color (default_color opts)))
     (MakeShape 'ellipse position velocity width height color)))
 
 (define (MakeRectangle position velocity width height . opts)
-  (let ((color (if (null? opts)
-                 color_black
-                 (car opts))))
+  (let ((color (default_color opts)))
     (MakeShape 'rectangle position velocity width height color)))
+
+(define (MakePoint position velocity . opts)
+  (let ((color (default_color opts)))
+    (MakeShape 'ellipse position velocity 3 3 color)))
 
 
 (define (MakeShape type position velocity width height color)
@@ -56,4 +57,8 @@
     dispatch))
 
 
-(define color_black 'black)
+
+(define (default_color opts)
+  (if (null? opts)
+    'white
+    (car opts)))

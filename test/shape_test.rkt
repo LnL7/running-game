@@ -41,3 +41,13 @@
     (check-exn
       exn:fail?
       (lambda () (rectangle 'foobar)))))
+
+
+(test-case
+  "ShapePoint"
+  (let* ((pos   (MakePosition 1 2))
+         (vel   (MakeVelocity 3 4))
+         (point (MakePoint pos vel 5 6)))
+    (check-eq? (point 'type)   'ellipse)
+    (check-eq? (point 'width)  3)
+    (check-eq? (point 'height) 3)))
