@@ -1,5 +1,6 @@
 #lang racket/base
 (require rackunit)
+(require "../stub.rkt")
 (require "../position.rkt")
 (require "../velocity.rkt")
 
@@ -7,9 +8,11 @@
 
 (test-case
   "Position"
-  (let ((position (MakePosition 1 2)))
+  (let ((display_engine (MakeStub 'position))
+        (position       (MakePosition 1 2)))
     (check-eq? (position 'x) 1)
     (check-eq? (position 'y) 2)
+    (check-not-exn (lambda () (position 'render display_engine)))
     (check-exn
       exn:fail?
       (lambda () (position 'foobar)))))

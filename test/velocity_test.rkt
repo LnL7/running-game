@@ -1,33 +1,36 @@
 #lang racket/base
 (require rackunit)
+(require "../stub.rkt")
 (require "../velocity.rkt")
 
 
 
 (test-case
   "Velocity"
-  (let ((vel (MakeVelocity 1 2)))
-    (check-eq? (vel 'horizontal) 1)
-    (check-eq? (vel 'vertical) 2)
+  (let ((display_engine (MakeStub 'velocity))
+        (velocity       (MakeVelocity 1 2)))
+    (check-eq? (velocity 'horizontal) 1)
+    (check-eq? (velocity 'vertical) 2)
+    (check-not-exn (lambda () (velocity 'render display_engine)))
     (check-exn
       exn:fail?
-      (lambda () (vel 'foobar)))))
+      (lambda () (velocity 'foobar)))))
 
 
 (test-case
   "Velocity.scale!"
-  (let ((vel (MakeVelocity 1 2)))
-    (vel 'scale! -1)
-    (check-eq? (vel 'horizontal) -1)
-    (check-eq? (vel 'vertical) -2)))
+  (let ((velocity (MakeVelocity 1 2)))
+    (velocity 'scale! -1)
+    (check-eq? (velocity 'horizontal) -1)
+    (check-eq? (velocity 'vertical) -2)))
 
 
 (test-case
   "Velocity.add!"
-  (let ((vel (MakeVelocity 1 2)))
-    (vel 'add! (MakeVelocity 2 1))
-    (check-eq? (vel 'horizontal) 3)
-    (check-eq? (vel 'vertical) 3)))
+  (let ((velocity (MakeVelocity 1 2)))
+    (velocity 'add! (MakeVelocity 2 1))
+    (check-eq? (velocity 'horizontal) 3)
+    (check-eq? (velocity 'vertical) 3)))
 
 
 (test-case

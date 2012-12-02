@@ -1,39 +1,43 @@
 #lang racket/base
 (require rackunit)
+(require "../stub.rkt")
 (require "../shape.rkt")
 
 
 
 (test-case
   "ShapeEllipse"
-  (let* ((pos (MakePosition 1 2))
-         (vel (MakeVelocity 3 4))
-         (w 5)
-         (h 6)
-         (ellipse (MakeEllipse pos vel w h)))
-    (check-eq? (send ellipse 'type)     'ellipse)
-    (check-eq? (send ellipse 'position) pos)
-    (check-eq? (send ellipse 'velocity) vel)
-    (check-eq? (send ellipse 'width)    w)
-    (check-eq? (send ellipse 'height)   h)
+  (let* ((display_engine (MakeStub 'ellipse))
+         (physics_engine (MakeStub 'ellipse))
+         (pos            (MakePosition 1 2))
+         (vel            (MakeVelocity 3 4))
+         (ellipse        (MakeEllipse pos vel 5 6)))
+    (check-eq? (ellipse 'type)     'ellipse)
+    (check-eq? (ellipse 'position) pos)
+    (check-eq? (ellipse 'velocity) vel)
+    (check-eq? (ellipse 'width)    5)
+    (check-eq? (ellipse 'height)   6)
+    (check-not-exn (lambda () (ellipse 'render display_engine)))
+    (check-not-exn (lambda () (ellipse 'update! physics_engine)))
     (check-exn
       exn:fail?
-      (lambda () (send ellipse 'foobar)))))
+      (lambda () (ellipse 'foobar)))))
 
 
 (test-case
   "ShapeRectangle"
-  (let* ((pos (MakePosition 1 2))
-         (vel (MakeVelocity 3 4))
-         (w 5)
-         (h 6)
-         (rectangle (MakeRectangle pos vel w h)))
-    (check-eq? (send rectangle 'type)     'rectangle)
-    (check-eq? (send rectangle 'position) pos)
-    (check-eq? (send rectangle 'velocity) vel)
-    (check-eq? (send rectangle 'width)    w)
-    (check-eq? (send rectangle 'height)   h)
+  (let* ((display_engine (MakeStub 'rectangle))
+         (physics_engine (MakeStub 'rectangle))
+         (pos            (MakePosition 1 2))
+         (vel            (MakeVelocity 3 4))
+         (rectangle      (MakeRectangle pos vel 5 6)))
+    (check-eq? (rectangle 'type)     'rectangle)
+    (check-eq? (rectangle 'position) pos)
+    (check-eq? (rectangle 'velocity) vel)
+    (check-eq? (rectangle 'width)    5)
+    (check-eq? (rectangle 'height)   6)
+    (check-not-exn (lambda () (rectangle 'render display_engine)))
+    (check-not-exn (lambda () (rectangle 'update! physics_engine)))
     (check-exn
       exn:fail?
-      (lambda () (send rectangle 'foobar)))))
-
+      (lambda () (rectangle 'foobar)))))

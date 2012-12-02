@@ -1,14 +1,17 @@
 #lang racket/base
 (require rackunit)
+(require "../stub.rkt")
 (require "../score.rkt")
 
 
 
 (test-case
   "Score"
-  (let ((score (MakeScore)))
+  (let ((display_engine (MakeStub 'score))
+        (score          (MakeScore)))
     (check-eq? (score 'current) 0)
     (check-eq? (score 'highest) 0)
+    (check-not-exn (lambda () (score 'render display_engine)))
     (check-exn
       exn:fail?
       (lambda () (score 'foobar)))))
