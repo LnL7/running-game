@@ -20,7 +20,7 @@
         args))
 
     (define (render engine)
-      (let ((shape (MakeRectangle (get_position) (get_velocity) _width _height COLOR)))
+      (let ((shape (MakeRectangle _position _velocity _width _height COLOR)))
         (shape 'render engine)))
 
     (define (update! engine)

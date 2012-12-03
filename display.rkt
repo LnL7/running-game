@@ -18,24 +18,24 @@
         args))
 
     (define (shape_rectangle rectangle color)
-      (let* ((width  (rectangle 'width))
-             (height (rectangle 'height))
-             (pos    (rectangle 'position))
-             (x      (pos 'x))
-             (y      (pos 'y)))
-        (start!
-            (lambda (delta)
-              (use-brush _canvas (to_brush color))
-              (draw-rectangle _canvas x y width height)))))
+      (start!
+        (lambda (delta)
+          (let* ((width  (rectangle 'width))
+                 (height (rectangle 'height))
+                 (pos    (rectangle 'position))
+                 (x      (pos 'x))
+                 (y      (pos 'y)))
+            (use-brush _canvas (to_brush color))
+            (draw-rectangle _canvas x y width height)))))
 
     (define (shape_ellipse ellipse color)
-      (let* ((width  (ellipse 'width))
-             (height (ellipse 'height))
-             (pos    (ellipse 'position))
-             (x      (pos 'x))
-             (y      (pos 'y)))
-        (start!
-          (lambda (delta)
+      (start!
+        (lambda (delta)
+          (let* ((width  (ellipse 'width))
+                 (height (ellipse 'height))
+                 (pos    (ellipse 'position))
+                 (x      (pos 'x))
+                 (y      (pos 'y)))
             (use-brush _canvas (to_brush color))
             (draw-ellipse _canvas x y width height)))))
 

@@ -18,7 +18,7 @@
         args))
 
     (define (render engine)
-      (let ((shape (MakeEllipse (get_position) (get_velocity) SIZE SIZE COLOR)))
+      (let ((shape (MakeEllipse _position (MakeVelocity 0 0) SIZE SIZE COLOR)))
         (shape 'render engine)))
 
     (define (update! engine)
