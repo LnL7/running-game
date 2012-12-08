@@ -25,6 +25,8 @@
       (let ((shape (MakeRectangle _position _velocity SIZE SIZE)))
         (shape 'update! engine)))
 
+    ;; Private
+
     (define (get_position) (_position 'copy))
     (define (get_velocity) (_velocity 'copy))
 

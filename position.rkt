@@ -38,6 +38,8 @@
     (define (render engine)
       (engine 'position dispatch))
 
+    ;; Private
+
     (define (set_x! x) (set! _x x) dispatch)
     (define (set_y! y) (set! _y y) dispatch)
 

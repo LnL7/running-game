@@ -27,6 +27,8 @@
       (let ((shape (MakeRectangle _position _velocity _width _height)))
         (shape 'render engine)))
 
+    ;; Private
+
     (define (get_position) (_position 'copy))
     (define (get_velocity) (_velocity 'copy))
 
