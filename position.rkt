@@ -8,13 +8,13 @@
         (_y y))
     (define (dispatch msg . args)
       (apply
-        (cond
-          ((eq? msg 'x)        get_x)
-          ((eq? msg 'y)        get_y)
-          ((eq? msg 'distance) calculate_distance)
-          ((eq? msg 'copy)     copy_position)
-          ((eq? msg 'move!)    move_velocity!)
-          ((eq? msg 'render)   render)
+        (case msg
+          ((x)        get_x)
+          ((y)        get_y)
+          ((distance) calculate_distance)
+          ((copy)     copy_position)
+          ((move!)    move_velocity!)
+          ((render)   render)
           (else
             (error msg "method missing ~a" dispatch)))
         args))

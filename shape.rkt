@@ -30,14 +30,14 @@
         (_height   height))
     (define (dispatch msg . args)
       (apply
-        (cond
-          ((eq? msg 'type)     get_type)
-          ((eq? msg 'position) get_position)
-          ((eq? msg 'velocity) get_velocity)
-          ((eq? msg 'width)    get_width)
-          ((eq? msg 'height)   get_height)
-          ((eq? msg 'render)   render)
-          ((eq? msg 'update!)  update!)
+        (case msg
+          ((type)     get_type)
+          ((position) get_position)
+          ((velocity) get_velocity)
+          ((width)    get_width)
+          ((height)   get_height)
+          ((render)   render)
+          ((update!)  update!)
           (else
             (error msg "method missing ~a" dispatch)))
         args))

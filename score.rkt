@@ -8,12 +8,12 @@
         (_highest 0))
     (define (dispatch msg . args)
       (apply
-        (cond
-          ((eq? msg 'current) get_current)
-          ((eq? msg 'highest) get_highest)
-          ((eq? msg 'add)     add_current)
-          ((eq? msg 'end)     end_current)
-          ((eq? msg 'render)  render)
+        (case msg
+          ((current) get_current)
+          ((highest) get_highest)
+          ((add)     add_current)
+          ((end)     end_current)
+          ((render)  render)
           (else
             (error msg "method missing ~a" dispatch)))
         args))

@@ -8,13 +8,13 @@
         (_vertical vertical))
     (define (dispatch msg . args)
       (apply
-        (cond
-          ((eq? msg 'horizontal) get_horizontal)
-          ((eq? msg 'vertical)   get_vertical)
-          ((eq? msg 'copy)       copy_velocity)
-          ((eq? msg 'scale!)     scale_number!)
-          ((eq? msg 'add!)       add_velocity!)
-          ((eq? msg 'render)     render)
+        (case msg
+          ((horizontal) get_horizontal)
+          ((vertical)   get_vertical)
+          ((copy)       copy_velocity)
+          ((scale!)     scale_number!)
+          ((add!)       add_velocity!)
+          ((render)     render)
           (else
             (error msg "method missing ~a" dispatch)))
         args))

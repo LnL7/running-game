@@ -12,12 +12,12 @@
         (_looping #f))
     (define (dispatch msg . args)
       (apply
-        (cond
-          ((eq? msg 'rectangle) shape_rectangle)
-          ((eq? msg 'ellipse)   shape_ellipse)
-          ((eq? msg 'add!)      add_object!)
-          ((eq? msg 'remove!)   remove_object!)
-          ((eq? msg 'start!)    start_loop!)
+        (case msg
+          ((rectangle) shape_rectangle)
+          ((ellipse)   shape_ellipse)
+          ((add!)      add_object!)
+          ((remove!)   remove_object!)
+          ((start!)    start_loop!)
           (else
             (error msg "method missing ~a" dispatch)))
         args))

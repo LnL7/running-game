@@ -7,13 +7,13 @@
   (let ((_scope 0))
     (define (dispatch msg . args)
       (apply
-        (cond
-          ((eq? msg 'position)  position)
-          ((eq? msg 'velocity)  velocity)
-          ((eq? msg 'ellipse)   shape_ellipse)
-          ((eq? msg 'rectangle) shape_rectangle)
-          ((eq? msg 'score)     score)
-          ((eq? msg 'warning)   warning)
+        (case msg
+          ((position)  position)
+          ((velocity)  velocity)
+          ((ellipse)   shape_ellipse)
+          ((rectangle) shape_rectangle)
+          ((score)     score)
+          ((warning)   warning)
           (else
             (error msg "method missing ~a" dispatch)))
         args))

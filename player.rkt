@@ -10,9 +10,9 @@
         (_velocity (MakeVelocity 0 0)))
     (define (dispatch msg . args)
       (apply
-        (cond
-          ((eq? msg 'render)  render)
-          ((eq? msg 'update!) update!)
+        (case msg
+          ((render)  render)
+          ((update!) update!)
           (else
             (error msg "method missing ~a" dispatch)))
         args))

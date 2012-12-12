@@ -8,10 +8,10 @@
         (_vector  (make-vector _size)))
     (define (dispatch msg . args)
       (apply
-        (cond
-          ((eq? msg 'insert!) insert_pair!)
-          ((eq? msg 'remove!) remove_for_key)
-          ((eq? msg 'value)   value_for_key)
+        (case msg
+          ((insert!) insert_pair!)
+          ((remove!) remove_for_key)
+          ((value)   value_for_key)
           (else
             (error msg "method missing ~a" dispatch)))
         args))
@@ -56,11 +56,11 @@
 (define (MakePair _key _value)
   (define (dispatch msg . args)
     (apply
-      (cond
-        ((eq? msg 'key)    get_key)
-        ((eq? msg 'value)  get_value)
-        ((eq? msg 'key!)   set_key!)
-        ((eq? msg 'value!) set_value!)
+      (case msg
+        ((key)    get_key)
+        ((value)  get_value)
+        ((key!)   set_key!)
+        ((value!) set_value!)
         (else
           (error msg "method missing ~a" dispatch)))
       args))
