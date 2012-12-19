@@ -1,4 +1,5 @@
 #lang racket/base
+(require "helpers.rkt")
 (provide MakeDictionary MakePair)
 
 
@@ -13,7 +14,7 @@
           ((remove!) remove_for_key)
           ((value)   value_for_key)
           (else
-            (error msg "method missing ~a" dispatch)))
+            (method_missing msg dispatch)))
         args))
 
     (define (insert_pair! pair)

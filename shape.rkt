@@ -1,6 +1,7 @@
 #lang racket/base
 (require "velocity.rkt"
-         "position.rkt")
+         "position.rkt"
+         "helpers.rkt")
 (provide (all-from-out "velocity.rkt"
                        "position.rkt")
          MakePoint
@@ -39,7 +40,7 @@
           ((render)   render)
           ((update!)  update!)
           (else
-            (error msg "method missing ~a" dispatch)))
+            (method_missing msg dispatch)))
         args))
 
     (define (get_type)     _type)

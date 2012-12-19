@@ -1,4 +1,5 @@
 #lang racket/base
+(require "helpers.rkt")
 (provide MakeConsole)
 
 
@@ -15,7 +16,7 @@
           ((score)     score)
           ((warning)   warning)
           (else
-            (error msg "method missing ~a" dispatch)))
+            (method_missing msg dispatch)))
         args))
 
     (define (position pos)

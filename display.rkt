@@ -1,5 +1,6 @@
 #lang racket/base
-(require "lib/canvas.rkt")
+(require "lib/canvas.rkt"
+         "helpers.rkt")
 (provide MakeDisplay)
 
 
@@ -11,7 +12,7 @@
         ((rectangle) shape_rectangle)
         ((ellipse)   shape_ellipse)
         (else
-          (error msg "method missing ~a" dispatch)))
+          (method_missing msg dispatch)))
       args))
 
   (define (shape_rectangle rectangle color)

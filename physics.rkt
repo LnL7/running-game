@@ -1,4 +1,5 @@
 #lang racket/base
+(require "helpers.rkt")
 (provide MakePhysics)
 
 
@@ -9,7 +10,7 @@
       (case msg
         ((rectangle) shape_rectangle)
         (else
-          (error msg "method missing ~a" dispatch)))
+          (method_missing msg dispatch)))
       args))
 
   (define (shape_rectangle rectangle)

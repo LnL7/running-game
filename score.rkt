@@ -1,4 +1,5 @@
 #lang racket/base
+(require "helpers.rkt")
 (provide MakeScore)
 
 
@@ -15,7 +16,7 @@
           ((end)     end_current)
           ((render)  render)
           (else
-            (error msg "method missing ~a" dispatch)))
+            (method_missing msg dispatch)))
         args))
 
     (define (get_current) _current)

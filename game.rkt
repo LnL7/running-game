@@ -1,8 +1,9 @@
 #lang racket/base
-(require "lib/canvas.rkt")
-(require "player.rkt")
-(require "display.rkt")
-(require "physics.rkt")
+(require "lib/canvas.rkt"
+         "player.rkt"
+         "display.rkt"
+         "physics.rkt"
+         "helpers.rkt")
 (provide MakeGame)
 
 
@@ -17,7 +18,7 @@
           ((player) start_player)
           ((loop)   start_loop)
           (else
-            (error msg "method missing ~a" dispatch)))
+            (method_missing msg dispatch)))
         args))
 
     (define (start_player)

@@ -1,4 +1,5 @@
 #lang racket/base
+(require "helpers.rkt")
 (provide MakePosition)
 
 
@@ -16,7 +17,7 @@
           ((move!)    move_velocity!)
           ((render)   render)
           (else
-            (error msg "method missing ~a" dispatch)))
+            (method_missing msg dispatch)))
         args))
 
     (define (get_x) _x)

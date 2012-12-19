@@ -1,5 +1,6 @@
 #lang racket/base
-(require "shape.rkt")
+(require "shape.rkt"
+         "helpers.rkt")
 (provide (all-from-out "shape.rkt")
          MakePlayer)
 
@@ -14,7 +15,7 @@
           ((render)  render)
           ((update!) update!)
           (else
-            (error msg "method missing ~a" dispatch)))
+            (method_missing msg dispatch)))
         args))
 
     (define (render engine)

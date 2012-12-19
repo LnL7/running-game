@@ -1,4 +1,5 @@
 #lang racket/base
+(require "helpers.rkt")
 (provide MakeStub)
 
 
@@ -9,7 +10,7 @@
       (apply
         (let __iter ((lst methods))
           (if (null? lst)
-            (error msg "method missing ~a" dispatch)
+            (method_missing msg dispatch)
             (let ((head (car lst)))
               (if (eq? msg head)
                 stub
