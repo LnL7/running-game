@@ -39,7 +39,7 @@
     (define (object_loop obj)
       (if obj
         (lambda (delta)
-          ((obj 'render _display))
+          ((obj 'render _display)  delta)
           ((obj 'update! _physics) delta))
         (lambda (delta) #f)))
 

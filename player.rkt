@@ -8,7 +8,7 @@
 
 (define (MakePlayer position)
   (let ((_position position)
-        (_velocity (MakeVelocity 5 0)))
+        (_velocity (MakeVelocity 10 0)))
     (define (dispatch msg . args)
       (apply
         (case msg
