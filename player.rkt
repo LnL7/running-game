@@ -35,4 +35,4 @@
 
 
 (define SIZE 100)
-(define COLOR 'blue)
+(define COLOR "blue")

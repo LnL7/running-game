@@ -61,5 +61,5 @@
 
 (define (default_color opts)
   (if (null? opts)
-    'white
+    "white"
     (car opts)))

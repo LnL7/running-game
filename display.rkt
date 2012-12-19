@@ -15,23 +15,25 @@
           (method_missing msg dispatch)))
       args))
 
-  (define (shape_rectangle rectangle color)
+  (define (shape_rectangle rectangle color_name)
     (lambda ()
-      (let* ((width  (rectangle 'width))
+      (let* ((color  (find-color color_name))
+             (width  (rectangle 'width))
              (height (rectangle 'height))
              (pos    (rectangle 'position))
              (x      (pos 'x))
              (y      (pos 'y)))
-        (fill-rectangle! x y width height black))))
+        (fill-rectangle! x y width height color))))
 
-  (define (shape_ellipse ellipse color)
+  (define (shape_ellipse ellipse color_name)
     (lambda ()
-      (let* ((width  (ellipse 'width))
+      (let* ((color  (find-color color_name))
+             (width  (ellipse 'width))
              (height (ellipse 'height))
              (pos    (ellipse 'position))
              (x      (pos 'x))
              (y      (pos 'y)))
-        (fill-ellipse! x y width height black))))
+        (fill-ellipse! x y width height color))))
 
   ;; Private
 
