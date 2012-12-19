@@ -1,10 +1,14 @@
 #lang racket/base
+(require "../lib/canvas.rkt")
 (require "../player.rkt")
 (require "../console.rkt")
 (require "../display.rkt")
 
 
-(let* ((pos    (MakePosition 50 10))
+
+(let* ((pos    (MakePosition 100 200))
        (player (MakePlayer pos)))
   (player 'render (MakeConsole))
-  (player 'render (MakeDisplay 200 200)))
+  (start-game-loop
+    (let ((display (MakeDisplay)))
+      (player 'render display))))
