@@ -8,7 +8,7 @@
 
 (define (MakePlayer position)
   (let ((_position position)
-        (_velocity (MakeVelocity 10 0)))
+        (_velocity NULL_VELOCITY))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -19,7 +19,7 @@
         args))
 
     (define (render engine)
-      (let ((shape (MakeEllipse _position (MakeVelocity 0 0) SIZE SIZE COLOR)))
+      (let ((shape (MakeEllipse _position _velocity SIZE SIZE COLOR)))
         (shape 'render engine)))
 
     (define (update! engine)
@@ -34,5 +34,7 @@
     dispatch))
 
 
-(define SIZE 100)
+(define NULL_VELOCITY (MakeVelocity 0 0))
+(define JUMP_VELOCITY (MakeVelocity 10 0))
+(define SIZE 25)
 (define COLOR "blue")

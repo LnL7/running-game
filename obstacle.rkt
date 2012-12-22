@@ -1,6 +1,6 @@
 #lang racket/base
-(require "shape.rkt")
-(require "helpers.rkt")
+(require "shape.rkt"
+         "helpers.rkt")
 (provide (all-from-out "shape.rkt")
          MakeObstacle)
 
@@ -10,7 +10,7 @@
   (let ((_position position)
         (_width    width)
         (_height   height)
-        (_velocity (MakeVelocity 0 0)))
+        (_velocity VELOCITY))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -26,7 +26,7 @@
 
     (define (update! engine)
       (let ((shape (MakeRectangle _position _velocity _width _height)))
-        (shape 'render engine)))
+        (shape 'update! engine)))
 
     ;; Private
 
@@ -36,4 +36,5 @@
     dispatch))
 
 
-(define COLOR 'black)
+(define VELOCITY (MakeVelocity -5 0))
+(define COLOR "black")

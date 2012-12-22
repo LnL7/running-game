@@ -35,7 +35,6 @@
                 (y (pos 'y)))
             (fill-rectangle! x y width height color)))))
 
-
     ;; Private
 
     dispatch)
