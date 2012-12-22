@@ -7,10 +7,12 @@
 
 
 (define (MakeObstacle position width height)
-  (let ((_position position)
-        (_width    width)
-        (_height   height)
-        (_velocity VELOCITY))
+  (let ((_display_shape #f)
+        (_physics_shape #f)
+        (_position      position)
+        (_width         width)
+        (_height        height)
+        (_velocity      VELOCITY))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -21,12 +23,12 @@
         args))
 
     (define (render engine)
-      (let ((shape (MakeRectangle _position _velocity _width _height COLOR)))
-        (shape 'render engine)))
+      (unless _display_shape (set! _display_shape (MakeRectangle _position _velocity _width _height COLOR)))
+      (_display_shape 'render engine))
 
     (define (update! engine)
-      (let ((shape (MakeRectangle _position _velocity _width _height)))
-        (shape 'update! engine)))
+      (unless _physics_shape (set! _physics_shape (MakeRectangle _position _velocity _width _height)))
+      (_physics_shape 'update! engine))
 
     ;; Private
 

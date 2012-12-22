@@ -16,8 +16,8 @@
   (define (shape_rectangle rectangle)
     (lambda (delta)
       (let ((pos (rectangle 'position))
-            (vel ((rectangle 'velocity) 'copy)))
-        (vel 'scale! (/ delta 100))
+            (vel (rectangle 'velocity)))
+        ((vel 'copy) 'scale! (/ delta 100))
         (pos 'move! vel))))
 
 
