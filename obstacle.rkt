@@ -11,8 +11,7 @@
         (_physics_shape #f)
         (_position      position)
         (_width         width)
-        (_height        height)
-        (_velocity      VELOCITY))
+        (_height        height))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -23,20 +22,17 @@
         args))
 
     (define (render engine)
-      (unless _display_shape (set! _display_shape (MakeRectangle _position _velocity _width _height COLOR)))
+      (unless _display_shape (set! _display_shape (MakeRectangle _position VELOCITY _width _height COLOR)))
       (_display_shape 'render engine))
 
     (define (update! engine)
-      (unless _physics_shape (set! _physics_shape (MakeRectangle _position _velocity _width _height)))
+      (unless _physics_shape (set! _physics_shape (MakeRectangle _position VELOCITY _width _height)))
       (_physics_shape 'update! engine))
 
     ;; Private
-
-    (define (get_position) (_position 'copy))
-    (define (get_velocity) (_velocity 'copy))
 
     dispatch))
 
 
 (define VELOCITY (MakeVelocity -5 0))
-(define COLOR "black")
+(define COLOR    "black")

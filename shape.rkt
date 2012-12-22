@@ -11,15 +11,15 @@
 
 
 (define (MakeEllipse position velocity width height . opts)
-  (let ((color (default_color opts)))
+  (let ((color (default_color_helper opts)))
     (MakeShape 'ellipse position velocity width height color)))
 
 (define (MakeRectangle position velocity width height . opts)
-  (let ((color (default_color opts)))
+  (let ((color (default_color_helper opts)))
     (MakeShape 'rectangle position velocity width height color)))
 
 (define (MakePoint position velocity . opts)
-  (let ((color (default_color opts)))
+  (let ((color (default_color_helper opts)))
     (MakeShape 'ellipse position velocity 3 3 color)))
 
 
@@ -59,7 +59,9 @@
 
 
 
-(define (default_color opts)
+(define (default_color_helper opts)
   (if (null? opts)
-    "white"
+    COLOR
     (car opts)))
+
+(define COLOR "white")

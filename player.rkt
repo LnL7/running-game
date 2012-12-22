@@ -30,13 +30,10 @@
 
     ;; Private
 
-    (define (get_position) (_position 'copy))
-    (define (get_velocity) (_velocity 'copy))
-
     dispatch))
 
 
 (define NULL_VELOCITY (MakeVelocity 0 0))
 (define JUMP_VELOCITY (MakeVelocity 10 0))
-(define SIZE 25)
-(define COLOR "blue")
+(define SIZE          25)
+(define COLOR         "blue")

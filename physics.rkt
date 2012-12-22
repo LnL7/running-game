@@ -20,5 +20,4 @@
         ((vel 'copy) 'scale! (/ delta 100))
         (pos 'move! vel))))
 
-
   dispatch)
