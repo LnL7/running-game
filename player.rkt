@@ -21,7 +21,7 @@
         args))
 
     (define (render engine)
-      (unless _display_shape (set! _display_shape (MakeEllipse _position SIZE SIZE COLOR)))
+      (unless _display_shape (set! _display_shape (MakeImage _position SIZE SIZE PATH)))
       (_display_shape 'render engine))
 
     (define (update! engine)
@@ -38,4 +38,4 @@
 (define NULL_VELOCITY    (MakeVelocity 0 0))
 (define JUMP_VELOCITY    (MakeVelocity 0 10))
 (define SIZE             25)
-(define COLOR            "blue")
+(define PATH             "resources/player.png")

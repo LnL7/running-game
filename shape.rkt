@@ -27,7 +27,7 @@
   (MakeShape 'image position width height path))
 
 
-(define (MakeShape type position width height color)
+(define (MakeShape type position width height color_or_path)
   (let ((_type type)
         (_position position)
         (_width    width)
@@ -51,7 +51,7 @@
     (define (get_height)   _height)
 
     (define (render engine)
-      (engine type dispatch color))
+      (engine type dispatch color_or_path))
 
     (define (move! engine velocity)
       (engine type dispatch velocity))

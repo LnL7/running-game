@@ -33,6 +33,6 @@
   dispatch)
 
 
-(define FLOOR_HEIGHT     20)
+(define FLOOR_HEIGHT     0)
 (define BOUNCE_SPEED     5)
 (define GRAVITY_VELOCITY (MakeVelocity 0 -0.94))

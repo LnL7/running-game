@@ -11,6 +11,7 @@
         (case msg
           ((ellipse)   shape_ellipse)
           ((rectangle) shape_rectangle)
+          ((image)     shape_image)
           (else
             (method_missing msg dispatch)))
         args))
@@ -34,6 +35,14 @@
           (let ((x (pos 'x))
                 (y (pos 'y)))
             (fill-rectangle! x y width height color)))))
+
+    (define (shape_image rectangle path)
+      (let ((image (make-image path 'png/alpha))
+            (pos   (rectangle 'position)))
+        (lambda (delta)
+          (let ((x (pos 'x))
+                (y (pos 'y)))
+            (draw-image! x y image)))))
 
     ;; Private
 
