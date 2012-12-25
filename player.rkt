@@ -21,19 +21,21 @@
         args))
 
     (define (render engine)
-      (unless _display_shape (set! _display_shape (MakeEllipse _position _velocity SIZE SIZE COLOR)))
+      (unless _display_shape (set! _display_shape (MakeEllipse _position SIZE SIZE COLOR)))
       (_display_shape 'render engine))
 
     (define (update! engine)
-      (unless _physics_shape (set! _physics_shape (MakeRectangle _position _velocity SIZE SIZE)))
-      (_physics_shape 'update! engine))
+      (unless _physics_shape (set! _physics_shape (MakeRectangle _position SIZE SIZE)))
+      (lambda args
+        (apply (engine 'gravity _velocity) args)
+        (apply (_physics_shape 'move! engine _velocity) args)))
 
     ;; Private
 
     dispatch))
 
 
-(define NULL_VELOCITY (MakeVelocity 0 0))
-(define JUMP_VELOCITY (MakeVelocity 10 0))
-(define SIZE          25)
-(define COLOR         "blue")
+(define NULL_VELOCITY    (MakeVelocity 0 0))
+(define JUMP_VELOCITY    (MakeVelocity 0 10))
+(define SIZE             25)
+(define COLOR            "blue")

@@ -12,6 +12,8 @@
         (case msg
           ((x)        get_x)
           ((y)        get_y)
+          ((x!)       set_x!)
+          ((y!)       set_y!)
           ((distance) calculate_distance)
           ((copy)     copy_position)
           ((move!)    move_velocity!)
@@ -23,6 +25,8 @@
     (define (get_x) _x)
     (define (get_y) _y)
 
+    (define (set_x! x) (set! _x x) dispatch)
+    (define (set_y! y) (set! _y y) dispatch)
 
     (define (calculate_distance pos)
       (let ((x (- (pos 'x) _x))
@@ -40,8 +44,5 @@
       (engine 'position dispatch))
 
     ;; Private
-
-    (define (set_x! x) (set! _x x) dispatch)
-    (define (set_y! y) (set! _y y) dispatch)
 
     dispatch))

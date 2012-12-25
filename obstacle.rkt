@@ -22,12 +22,12 @@
         args))
 
     (define (render engine)
-      (unless _display_shape (set! _display_shape (MakeRectangle _position VELOCITY _width _height COLOR)))
+      (unless _display_shape (set! _display_shape (MakeRectangle _position _width _height COLOR)))
       (_display_shape 'render engine))
 
     (define (update! engine)
-      (unless _physics_shape (set! _physics_shape (MakeRectangle _position VELOCITY _width _height)))
-      (_physics_shape 'update! engine))
+      (unless _physics_shape (set! _physics_shape (MakeRectangle _position _width _height)))
+      (_physics_shape 'move! engine VELOCITY))
 
     ;; Private
 

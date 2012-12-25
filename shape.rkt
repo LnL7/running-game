@@ -6,27 +6,30 @@
                        "position.rkt")
          MakePoint
          MakeEllipse
-         MakeRectangle)
+         MakeRectangle
+         MakeImage)
 
 
 
-(define (MakeEllipse position velocity width height . opts)
+(define (MakeEllipse position width height . opts)
   (let ((color (default_color_helper opts)))
-    (MakeShape 'ellipse position velocity width height color)))
+    (MakeShape 'ellipse position width height color)))
 
-(define (MakeRectangle position velocity width height . opts)
+(define (MakeRectangle position width height . opts)
   (let ((color (default_color_helper opts)))
-    (MakeShape 'rectangle position velocity width height color)))
+    (MakeShape 'rectangle position width height color)))
 
-(define (MakePoint position velocity . opts)
+(define (MakePoint position . opts)
   (let ((color (default_color_helper opts)))
-    (MakeShape 'ellipse position velocity 3 3 color)))
+    (MakeShape 'ellipse position 3 3 color)))
+
+(define (MakeImage position width height path)
+  (MakeShape 'image position width height path))
 
 
-(define (MakeShape type position velocity width height color)
+(define (MakeShape type position width height color)
   (let ((_type type)
         (_position position)
-        (_velocity velocity)
         (_width    width)
         (_height   height))
     (define (dispatch msg . args)
@@ -34,26 +37,24 @@
         (case msg
           ((type)     get_type)
           ((position) get_position)
-          ((velocity) get_velocity)
           ((width)    get_width)
           ((height)   get_height)
           ((render)   render)
-          ((update!)  update!)
+          ((move!)    move!)
           (else
             (method_missing msg dispatch)))
         args))
 
     (define (get_type)     _type)
     (define (get_position) _position)
-    (define (get_velocity) _velocity)
     (define (get_width)    _width)
     (define (get_height)   _height)
 
     (define (render engine)
       (engine type dispatch color))
 
-    (define (update! engine)
-      (engine type dispatch))
+    (define (move! engine velocity)
+      (engine type dispatch velocity))
 
     dispatch))
 
