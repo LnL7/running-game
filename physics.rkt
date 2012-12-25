@@ -19,20 +19,40 @@
     (lambda (delta)
       (let ((pos (rectangle 'position))
             (vel (velocity 'copy)))
-        (when (<= (pos 'y) FLOOR_HEIGHT)
-          (pos 'y! FLOOR_HEIGHT)
-          (velocity 'vertical! BOUNCE_SPEED))
         (vel 'scale! (/ delta 100))
         (pos 'move! vel))))
 
-  (define (velocity_gravity velocity)
+  (define (velocity_gravity velocity position end_jumping)
+    (position_reset position velocity end_jumping)
     (lambda (delta)
-      (let ((vel (GRAVITY_VELOCITY 'copy)))
-        (velocity 'add! (vel 'scale! (/ delta 100))))))
+      (let ((vel     (velocity 'copy))
+            (gravity (GRAVITY_VELOCITY 'copy)))
+        (velocity 'add! (vel 'scale! (/ delta -1000)))
+        (velocity 'add! (gravity 'scale! (/ delta 100))))))
+
+  ;; Private
+
+  (define (position_reset position velocity end_jumping)
+    (when (< (position 'x) 0)
+      (position 'x! 0)
+      (velocity 'horizontal! 1))
+
+    (when (> (position 'x) 750)
+      (position 'x! 750)
+      (velocity 'horizontal! -1))
+
+    (when (< (position 'y) FLOOR_HEIGHT)
+      (when end_jumping (end_jumping))
+      (position 'y! FLOOR_HEIGHT)
+      (velocity 'vertical! BOUNCE_SPEED))
+
+    (when (> (position 'y) 550)
+      (position 'y! 550)
+      (velocity 'vertical! 0)))
 
   dispatch)
 
 
 (define FLOOR_HEIGHT     0)
-(define BOUNCE_SPEED     5)
-(define GRAVITY_VELOCITY (MakeVelocity 0 -0.94))
+(define BOUNCE_SPEED     10)
+(define GRAVITY_VELOCITY (MakeVelocity 0 (* -0.94 4)))

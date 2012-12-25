@@ -4,6 +4,7 @@
          "obstacle.rkt"
          "display.rkt"
          "physics.rkt"
+         "input.rkt"
          "helpers.rkt")
 (provide MakeGame)
 
@@ -13,7 +14,8 @@
   (let ((_player    #f)
         (_obstacles '())
         (_display   (MakeDisplay))
-        (_physics   (MakePhysics)))
+        (_physics   (MakePhysics))
+        (_input     (MakeInput)))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -35,6 +37,7 @@
         (set! _obstacles obstacles)))
 
     (define (start_loop)
+      (when _player (_player 'input _input))
       (start-game-loop
         (lambda (delta)
           (let ((objects (cons _player _obstacles)))
