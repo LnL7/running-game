@@ -7,7 +7,7 @@
 
 (test-case
   "Player"
-  (let* ((display_engine (MakeStub 'ellipse))
+  (let* ((display_engine (MakeStub 'image))
          (physics_engine (MakeStub 'rectangle))
          (pos            (MakePosition 1 2))
          (player         (MakePlayer pos)))
