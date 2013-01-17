@@ -19,7 +19,7 @@
           ((add!)        add_velocity!)
           ((render)      render)
           (else
-            (method_missing msg dispatch)))
+            (method_missing msg 'Velocity)))
         args))
 
     (define (get_horizontal) _horizontal)

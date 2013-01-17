@@ -12,7 +12,7 @@
         ((rectangle) shape_rectangle)
         ((gravity)   velocity_gravity)
         (else
-          (method_missing msg dispatch)))
+          (method_missing msg 'Physics)))
       args))
 
   (define (shape_rectangle rectangle velocity)

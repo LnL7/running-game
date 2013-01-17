@@ -23,7 +23,7 @@
           ((obstacles) start_obstacles)
           ((loop)      start_loop)
           (else
-            (method_missing msg dispatch)))
+            (method_missing msg 'Game)))
         args))
 
     (define (start_player)

@@ -13,7 +13,7 @@
         ((jump)   player_jump)
         ((strafe) player_strafe)
         (else
-          (method_missing msg dispatch)))
+          (method_missing msg 'Input)))
       args))
 
   (define (player_jump is_jumping? start_jumping velocity)

@@ -18,7 +18,7 @@
           ((render)  render)
           ((update!) update!)
           (else
-            (method_missing msg dispatch)))
+            (method_missing msg 'Obstacle)))
         args))
 
     (define (render engine)

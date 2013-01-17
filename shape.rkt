@@ -42,7 +42,7 @@
           ((render)   render)
           ((move!)    move!)
           (else
-            (method_missing msg dispatch)))
+            (method_missing msg 'Shape)))
         args))
 
     (define (get_type)     _type)

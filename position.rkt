@@ -19,7 +19,7 @@
           ((move!)    move_velocity!)
           ((render)   render)
           (else
-            (method_missing msg dispatch)))
+            (method_missing msg 'Position)))
         args))
 
     (define (get_x) _x)

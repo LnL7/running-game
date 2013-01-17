@@ -13,7 +13,7 @@
           ((rectangle) shape_rectangle)
           ((image)     shape_image)
           (else
-            (method_missing msg dispatch)))
+            (method_missing msg 'Display)))
         args))
 
     (define (shape_ellipse ellipse color_name)

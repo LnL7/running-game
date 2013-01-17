@@ -19,7 +19,7 @@
           ((render)  render)
           ((update!) update!)
           (else
-            (method_missing msg dispatch)))
+            (method_missing msg 'Player)))
         args))
 
     (define (input engine)
