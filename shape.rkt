@@ -4,7 +4,6 @@
          "helpers.rkt")
 (provide (all-from-out "velocity.rkt"
                        "position.rkt")
-         MakePoint
          MakeEllipse
          MakeRectangle
          MakeImage)
@@ -18,10 +17,6 @@
 (define (MakeRectangle position width height . opts)
   (let ((color (default_color_helper opts)))
     (MakeShape 'rectangle position width height color)))
-
-(define (MakePoint position . opts)
-  (let ((color (default_color_helper opts)))
-    (MakeShape 'ellipse position 3 3 color)))
 
 (define (MakeImage position width height path)
   (MakeShape 'image position width height path))
