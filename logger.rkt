@@ -4,7 +4,7 @@
 
 
 
-(define (MakeLogger #:debug [-debug #f] #:warn [-warn #f] #:fatal [-fatal #t])
+(define (MakeLogger #:debug [-debug #f] #:warn [-warn #t] #:fatal [-fatal #t])
   (let ((-scope 0))
     (define (dispatch msg . args)
       (apply

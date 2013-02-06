@@ -20,17 +20,19 @@
   (define (player-jump is-jumping? start-jumping velocity)
     (on-key! #\w (lambda ()
                    (unless (is-jumping?)
+                     (-log 'debug "key-down" 'w)
                      (start-jumping)
                      (velocity 'add! kJumpVelocity))))
     (on-key! #\s (lambda ()
                    (when (is-jumping?)
+                     (-log 'debug "key-down" 's)
                      (velocity 'add! kFallVelocity)))))
 
-  (define (player-strafe position)
+  (define (player-strafe velocity)
     (on-key! #\d (lambda ()
-                   (position 'add! kStrafeRightVelocity)))
+                   (velocity 'horizontal! kRightStrafeSpeed)))
     (on-key! #\a (lambda ()
-                   (position 'add! kStrafeLeftVelocity))))
+                   (velocity 'horizontal! kLeftStrafeSpeed))))
 
 
   ;; Private
@@ -42,5 +44,5 @@
 
 (define kJumpVelocity        (MakeVelocity 0 100))
 (define kFallVelocity        (MakeVelocity 0 -10))
-(define kStrafeRightVelocity (MakeVelocity 1 0))
-(define kStrafeLeftVelocity  (MakeVelocity -1 0))
+(define kRightStrafeSpeed    20)
+(define kLeftStrafeSpeed     -20)
