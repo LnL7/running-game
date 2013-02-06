@@ -1,48 +1,55 @@
 #lang racket/base
-(require "helpers.rkt")
+(require "logger.rkt"
+         "helpers.rkt")
 (provide MakePosition)
 
 
 
-(define (MakePosition x y)
-  (let ((_x x)
-        (_y y))
+(define (MakePosition x y #:log [-log (MakeLogger)])
+  (let ((-x x)
+        (-y y))
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((x)        get_x)
-          ((y)        get_y)
-          ((x!)       set_x!)
-          ((y!)       set_y!)
-          ((distance) calculate_distance)
-          ((copy)     copy_position)
-          ((move!)    move_velocity!)
+          ((x)        get-x)
+          ((y)        get-y)
+          ((x!)       set-x!)
+          ((y!)       set-y!)
+          ((distance) calculate-distance)
+          ((copy)     copy-position)
+          ((move!)    move-velocity!)
           ((render)   render)
           (else
-            (method_missing msg 'Position)))
+            (-log 'fatal "method missing" msg kClass)))
         args))
 
-    (define (get_x) _x)
-    (define (get_y) _y)
+    (define (get-x) -x)
+    (define (get-y) -y)
 
-    (define (set_x! x) (set! _x x) dispatch)
-    (define (set_y! y) (set! _y y) dispatch)
+    (define (set-x! x) (set! -x x) dispatch)
+    (define (set-y! y) (set! -y y) dispatch)
 
-    (define (calculate_distance pos)
-      (let ((x (- (pos 'x) _x))
-            (y (- (pos 'y) _y)))
+    (define (calculate-distance pos)
+      (let ((x (- (pos 'x) -x))
+            (y (- (pos 'y) -y)))
         (sqrt (+ (expt x 2) (expt y 2)))))
 
-    (define (copy_position) (MakePosition _x _y))
+    (define (copy-position) (MakePosition -x -y))
 
-    (define (move_velocity! vel)
-      (set_x! (+ (vel 'horizontal) _x))
-      (set_y! (+ (vel 'vertical)   _y))
+    (define (move-velocity! vel)
+      (set-x! (+ (vel 'horizontal) -x))
+      (set-y! (+ (vel 'vertical)   -y))
       dispatch)
 
     (define (render engine)
       (engine 'position dispatch))
 
+
     ;; Private
 
+    (-log 'debug "initialized" kClass)
+
     dispatch))
+
+
+(define kClass 'Position)

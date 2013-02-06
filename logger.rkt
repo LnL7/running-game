@@ -1,22 +1,24 @@
 #lang racket/base
 (require "helpers.rkt")
-(provide MakeConsole)
+(provide MakeLogger)
 
 
 
-(define (MakeConsole)
-  (let ((_scope 0))
+(define (MakeLogger #:debug [-debug #f] #:warn [-warn #f] #:fatal [-fatal #t])
+  (let ((-scope 0))
     (define (dispatch msg . args)
       (apply
         (case msg
           ((position)  position)
           ((velocity)  velocity)
-          ((ellipse)   shape_ellipse)
-          ((rectangle) shape_rectangle)
+          ((ellipse)   shape-ellipse)
+          ((rectangle) shape-rectangle)
           ((score)     score)
-          ((warning)   warning)
+          ((debug)     debug)
+          ((warn)      warning)
+          ((fatal)     fatal)
           (else
-            (method_missing msg dispatch)))
+            (warning "method missing" msg kClass)))
         args))
 
     (define (position pos)
@@ -26,10 +28,10 @@
         (display "Position:")
         (indent!)
         (scope)
-        (display "_x = ")
+        (display "-x = ")
         (display x)
         (scope)
-        (display "_y = ")
+        (display "-y = ")
         (display y)
         (dedent!)))
 
@@ -40,21 +42,21 @@
         (display "Velocity:")
         (indent!)
         (scope)
-        (display "_h = ")
+        (display "-h = ")
         (display horizontal)
         (scope)
-        (display "_v = ")
+        (display "-v = ")
         (display vertical)
         (dedent!)))
 
-    (define (shape_ellipse ellipse color)
+    (define (shape-ellipse ellipse color)
       (scope)
       (display "ShapeEllipse: <")
       (display color)
       (display ">")
       (shape ellipse))
 
-    (define (shape_rectangle rectangle color)
+    (define (shape-rectangle rectangle color)
       (scope)
       (display "ShapeRectangle: <")
       (display color)
@@ -68,10 +70,10 @@
             (height (shape 'height)))
         (indent!)
         (scope)
-        (display "_w = ")
+        (display "-w = ")
         (display width)
         (scope)
-        (display "_h = ")
+        (display "-h = ")
         (display height)
         (position pos)
         (velocity vel)
@@ -84,26 +86,52 @@
         (display "Score:")
         (indent!)
         (scope)
-        (display "_c: ")
+        (display "-c: ")
         (display curr)
         (scope)
-        (display "_h: ")
+        (display "-h: ")
         (display high)
         (dedent!)))
 
-    (define (warning str)
-      (scope)
-      (display "WARNING: ")
-      (display str))
+    (define (debug str . args)
+      (when -debug
+        (scope)
+        (display "-----> ")
+        (display str)
+        (puts args)))
+
+    (define (warning str . args)
+      (when -warn
+        (scope)
+        (display "=====> ")
+        (display str)
+        (puts args)))
+
+    (define (fatal message sym . args)
+      (if -fatal
+        (error sym (string-append message " ~a") args)
+        (warning message)))
+
+
+    ;; Private
+
+    (define (puts args)
+      (unless (null? args)
+        (display " ")
+        (display (car args))
+        (puts (cdr args))))
 
     (define (scope)
       (newline)
-      (let iter ((ctr _scope))
+      (let iter ((ctr -scope))
         (unless (= ctr 0)
           (display " . ")
           (iter (- ctr 1)))))
 
-    (define (indent!) (set! _scope (+ _scope 1)))
-    (define (dedent!) (set! _scope (- _scope 1)))
+    (define (indent!) (set! -scope (+ -scope 1)))
+    (define (dedent!) (set! -scope (- -scope 1)))
 
     dispatch))
+
+
+(define kClass 'Logger)

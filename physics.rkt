@@ -1,38 +1,40 @@
 #lang racket/base
-(require "velocity.rkt"
+(require "logger.rkt"
+         "velocity.rkt"
          "helpers.rkt")
 (provide MakePhysics)
 
 
 
-(define (MakePhysics)
+(define (MakePhysics #:log [-log (MakeLogger)])
   (define (dispatch msg . args)
     (apply
       (case msg
-        ((rectangle) shape_rectangle)
-        ((gravity)   velocity_gravity)
+        ((rectangle) shape-rectangle)
+        ((gravity)   velocity-gravity)
         (else
-          (method_missing msg 'Physics)))
+          (-log 'fatal "method missing" msg kClass)))
       args))
 
-  (define (shape_rectangle rectangle velocity)
+  (define (shape-rectangle rectangle velocity)
     (lambda (delta)
       (let ((pos (rectangle 'position))
             (vel (velocity 'copy)))
         (vel 'scale! (/ delta 100))
         (pos 'move! vel))))
 
-  (define (velocity_gravity velocity position end_jumping)
-    (position_reset position velocity end_jumping)
+  (define (velocity-gravity velocity position end-jumping)
+    (position-reset position velocity end-jumping)
     (lambda (delta)
       (let ((vel     (velocity 'copy))
-            (gravity (GRAVITY_VELOCITY 'copy)))
+            (gravity (kGravityVelocity 'copy)))
         (velocity 'add! (vel 'scale! (/ delta -1000)))
         (velocity 'add! (gravity 'scale! (/ delta 100))))))
 
+
   ;; Private
 
-  (define (position_reset position velocity end_jumping)
+  (define (position-reset position velocity end-jumping)
     (when (< (position 'x) 0)
       (position 'x! 0)
       (velocity 'horizontal! 1))
@@ -41,18 +43,21 @@
       (position 'x! 750)
       (velocity 'horizontal! -1))
 
-    (when (< (position 'y) FLOOR_HEIGHT)
-      (when end_jumping (end_jumping))
-      (position 'y! FLOOR_HEIGHT)
-      (velocity 'vertical! BOUNCE_SPEED))
+    (when (< (position 'y) kFloorHeight)
+      (when end-jumping (end-jumping))
+      (position 'y! kFloorHeight)
+      (velocity 'vertical! kBounceSpeed))
 
     (when (> (position 'y) 550)
       (position 'y! 550)
       (velocity 'vertical! 0)))
 
+  (-log 'debug "initialized" kClass)
+
   dispatch)
 
 
-(define FLOOR_HEIGHT     0)
-(define BOUNCE_SPEED     10)
-(define GRAVITY_VELOCITY (MakeVelocity 0 (* -0.94 4)))
+(define kClass           'Physics)
+(define kFloorHeight     0)
+(define kBounceSpeed     10)
+(define kGravityVelocity (MakeVelocity 0 (* -0.94 4)))

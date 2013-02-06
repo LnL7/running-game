@@ -1,23 +1,24 @@
 #lang racket/base
-(require "lib/canvas.rkt"
+(require "logger.rkt"
+         "lib/canvas.rkt"
          "helpers.rkt")
 (provide MakeDisplay)
 
 
 
-(define (MakeDisplay)
+(define (MakeDisplay #:log [-log (MakeLogger)])
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((ellipse)   shape_ellipse)
-          ((rectangle) shape_rectangle)
-          ((image)     shape_image)
+          ((ellipse)   shape-ellipse)
+          ((rectangle) shape-rectangle)
+          ((image)     shape-image)
           (else
-            (method_missing msg 'Display)))
+            (-log 'fatal "method missing" msg kClass)))
         args))
 
-    (define (shape_ellipse ellipse color_name)
-      (let ((color  (find-color color_name))
+    (define (shape-ellipse ellipse color-name)
+      (let ((color  (find-color color-name))
             (width  (ellipse 'width))
             (height (ellipse 'height))
             (pos    (ellipse 'position)))
@@ -26,8 +27,8 @@
                 (y (pos 'y)))
             (fill-ellipse! x y width height color)))))
 
-    (define (shape_rectangle rectangle color_name)
-      (let ((color  (find-color color_name))
+    (define (shape-rectangle rectangle color-name)
+      (let ((color  (find-color color-name))
             (width  (rectangle 'width))
             (height (rectangle 'height))
             (pos    (rectangle 'position)))
@@ -36,7 +37,7 @@
                 (y (pos 'y)))
             (fill-rectangle! x y width height color)))))
 
-    (define (shape_image rectangle path)
+    (define (shape-image rectangle path)
       (let ((image (make-image path 'png/alpha))
             (pos   (rectangle 'position)))
         (lambda (delta)
@@ -44,6 +45,12 @@
                 (y (pos 'y)))
             (draw-image! x y image)))))
 
+
     ;; Private
 
+    (-log 'debug "initialized" kClass)
+
     dispatch)
+
+
+(define kClass 'Display)

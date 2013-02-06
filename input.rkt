@@ -1,42 +1,46 @@
 #lang racket/base
-(require "lib/canvas.rkt"
+(require "logger.rkt"
+         "lib/canvas.rkt"
          "velocity.rkt"
          "helpers.rkt")
 (provide MakeInput)
 
 
 
-(define (MakeInput)
+(define (MakeInput #:log [-log (MakeLogger)])
   (define (dispatch msg . args)
     (apply
       (case msg
-        ((jump)   player_jump)
-        ((strafe) player_strafe)
+        ((jump)   player-jump)
+        ((strafe) player-strafe)
         (else
-          (method_missing msg 'Input)))
+          (-log 'fatal "method missing" msg 'Input)))
       args))
 
-  (define (player_jump is_jumping? start_jumping velocity)
+  (define (player-jump is-jumping? start-jumping velocity)
     (on-key! #\w (lambda ()
-                   (unless (is_jumping?)
-                     (start_jumping)
-                     (velocity 'add! JUMP_VELOCITY))))
+                   (unless (is-jumping?)
+                     (start-jumping)
+                     (velocity 'add! kJumpVelocity))))
     (on-key! #\s (lambda ()
-                   (when (is_jumping?)
-                     (velocity 'add! FALL_VELOCITY)))))
+                   (when (is-jumping?)
+                     (velocity 'add! kFallVelocity)))))
 
-  (define (player_strafe position)
+  (define (player-strafe position)
     (on-key! #\d (lambda ()
-                   (position 'add! STRAFE_RIGHT_VELOCITY)))
+                   (position 'add! kStrafeRightVelocity)))
     (on-key! #\a (lambda ()
-                   (position 'add! STRAFE_LEFT_VELOCITY))))
+                   (position 'add! kStrafeLeftVelocity))))
+
 
   ;; Private
+
+  (-log 'debug "initialized Logger")
 
   dispatch)
 
 
-(define JUMP_VELOCITY         (MakeVelocity 0 100))
-(define FALL_VELOCITY         (MakeVelocity 0 -10))
-(define STRAFE_RIGHT_VELOCITY (MakeVelocity 1 0))
-(define STRAFE_LEFT_VELOCITY  (MakeVelocity -1 0))
+(define kJumpVelocity        (MakeVelocity 0 100))
+(define kFallVelocity        (MakeVelocity 0 -10))
+(define kStrafeRightVelocity (MakeVelocity 1 0))
+(define kStrafeLeftVelocity  (MakeVelocity -1 0))

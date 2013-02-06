@@ -1,17 +1,18 @@
 #lang racket/base
-(require "shape.rkt"
+(require "logger.rkt"
+         "shape.rkt"
          "helpers.rkt")
 (provide (all-from-out "shape.rkt")
          MakePlayer)
 
 
 
-(define (MakePlayer position)
-  (let ((_is_jumping    #t)
-        (_display_shape #f)
-        (_physics_shape #f)
-        (_position      position)
-        (_velocity      NULL_VELOCITY))
+(define (MakePlayer position #:log [-log (MakeLogger)])
+  (let ((-is-jumping    #t)
+        (-display-shape #f)
+        (-physics-shape #f)
+        (-position      position)
+        (-velocity      kNullVelocity))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -19,32 +20,41 @@
           ((render)  render)
           ((update!) update!)
           (else
-            (method_missing msg 'Player)))
+            (-log 'fatal "method missing" msg kClass)))
         args))
 
     (define (input engine)
-      (engine 'strafe _velocity)
-      (engine 'jump get_is_jumping? start_jumping _velocity))
+      (engine 'strafe -velocity)
+      (engine 'jump get-is-jumping? start-jumping -velocity))
 
     (define (render engine)
-      (unless _display_shape (set! _display_shape (MakeImage _position SIZE SIZE PATH)))
-      (_display_shape 'render engine))
+      (unless -display-shape (set! -display-shape (MakeImage -position kSize kSize kPath #:log -log)))
+      (-display-shape 'render engine))
 
     (define (update! engine)
-      (unless _physics_shape (set! _physics_shape (MakeRectangle _position SIZE SIZE)))
+      (unless -physics-shape (set! -physics-shape (MakeRectangle -position kSize kSize #:log -log)))
       (lambda args
-        (apply (engine 'gravity _velocity _position end_jumping) args)
-        (apply (_physics_shape 'move! engine _velocity) args)))
+        (apply (engine 'gravity -velocity -position end-jumping) args)
+        (apply (-physics-shape 'move! engine -velocity) args)))
 
     ;; Private
 
-    (define (get_is_jumping?) _is_jumping)
-    (define (end_jumping)     (set! _is_jumping #f))
-    (define (start_jumping)   (set! _is_jumping #t))
+    (define (get-is-jumping?) -is-jumping)
+
+    (define (end-jumping)
+      (-log 'debug "end jumping, Player")
+      (set! -is-jumping #f))
+
+    (define (start-jumping)
+      (-log 'debug "start jumping, Player")
+      (set! -is-jumping #t))
+
+    (-log 'debug "initialized" kClass)
 
     dispatch))
 
 
-(define NULL_VELOCITY    (MakeVelocity 0 0))
-(define SIZE             50)
-(define PATH             "resources/player.png")
+(define kClass        'Player)
+(define kNullVelocity (MakeVelocity 0 0))
+(define kSize          50)
+(define kPath          "resources/player.png")
