@@ -42,11 +42,11 @@
     (define (get-is-jumping?) -is-jumping)
 
     (define (end-jumping)
-      (-log 'debug "end jumping, Player")
+      (-log 'debug "end jumping" kClass)
       (set! -is-jumping #f))
 
     (define (start-jumping)
-      (-log 'debug "start jumping, Player")
+      (-log 'debug "start jumping" kClass)
       (set! -is-jumping #t))
 
     (-log 'debug "initialized" kClass)

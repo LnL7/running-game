@@ -93,31 +93,43 @@
         (display high)
         (dedent!)))
 
-    (define (debug str . args)
-      (when -debug
-        (scope)
-        (display "-----> ")
-        (display str)
-        (puts args)))
+    (define (debug message sym . args)
+      (cond
+        ((eq? -debug #f)  -debug)
+        ((symbol? -debug) (apply dispatch -debug message sym args))
+        (else
+          (scope)
+          (display "-----> ")
+          (display message)
+          (display " ")
+          (display sym)
+          (puts args))))
 
-    (define (warning str . args)
-      (when -warn
-        (scope)
-        (display "=====> ")
-        (display str)
-        (puts args)))
+    (define (warning message sym . args)
+      (cond
+        ((eq? -warn #f)  -warn)
+        ((symbol? -warn) (apply display -warn message sym args))
+        (else
+          (scope)
+          (display "=====> ")
+          (display message)
+          (display " ")
+          (display sym)
+          (puts args))))
 
     (define (fatal message sym . args)
-      (if -fatal
-        (error sym (string-append message " ~a") args)
-        (warning message)))
+      (cond
+        ((eq? -fatal #f)  -fatal)
+        ((symbol? -fatal) (apply dispatch -fatal message sym args))
+        (else
+          (error sym (string-append message " ~a") args))))
 
 
     ;; Private
 
     (define (puts args)
       (unless (null? args)
-        (display " ")
+        (display ", ")
         (display (car args))
         (puts (cdr args))))
 

@@ -5,24 +5,37 @@
 
 
 
-(define (MakeStub #:log [_log (MakeLogger)] . methods)
-  (let ((_ctr 0))
-    (define (dispatch msg . args)
-      (apply
-        (let __iter ((lst methods))
-          (if (null? lst)
-            (_log 'fatal "method missing" msg dispatch)
-            (let ((head (car lst)))
-              (if (eq? msg head)
-                stub
-                (__iter (cdr lst))))))
-        args))
+(define (MakeStub #:log [-log (MakeLogger)] . methods)
+  (define (dispatch msg . args)
+    (apply
+      (let --iter ((lst methods))
+        (if (null? lst)
+          (-log 'fatal "method missing" msg kClass)
+          (let ((head (car lst)))
+            (cond
+              ((eq? msg head)       stub)
+              ((method msg head) => (lambda (m) m))
+              (else
+                (--iter (cdr lst)))))))
+      args))
 
-    (define (stub . _)
-      (set! _ctr (+ _ctr 1))
-      (_log 'warn "stubbed with, " _)
-      _ctr)
 
-    (_log 'debug "initialized Stub")
+  (define (stub . args) #t)
 
-    dispatch))
+  ;; Private
+
+  (define (method msg lst)
+    (and
+      (pair? lst)
+      (eq? (car lst) msg)
+      (let ((res (cadr lst)))
+        (if (procedure? res)
+          res
+          (lambda args res)))))
+
+  (-log 'debug "initialized" kClass)
+
+  dispatch)
+
+
+(define kClass 'Stub)

@@ -14,7 +14,7 @@
         ((jump)   player-jump)
         ((strafe) player-strafe)
         (else
-          (-log 'fatal "method missing" msg 'Input)))
+          (-log 'fatal "method missing" msg kClass)))
       args))
 
   (define (player-jump is-jumping? start-jumping velocity)
@@ -37,11 +37,12 @@
 
   ;; Private
 
-  (-log 'debug "initialized Logger")
+  (-log 'debug "initialized" kClass)
 
   dispatch)
 
 
+(define kClass               'Input)
 (define kJumpVelocity        (MakeVelocity 0 100))
 (define kFallVelocity        (MakeVelocity 0 -10))
 (define kRightStrafeSpeed    20)
