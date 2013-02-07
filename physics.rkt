@@ -14,9 +14,11 @@
     (define (dispatch msg . args)
       (apply
         (case msg
+          ((player!)   set-player!)
           ((rectangle) shape-rectangle)
           ((gravity)   gravity)
           ((reset)     reset)
+          ((collide)   collide)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
@@ -32,6 +34,13 @@
     (define (reset . args)
       (lambda (delta)
         (apply -collision 'reset delta args)))
+
+    (define (collide . args)
+      (lambda (delta)
+        (apply -collision 'collide delta args)))
+
+    (define (set-player! . args)
+      (apply -collision 'player! args))
 
 
     ;; Private

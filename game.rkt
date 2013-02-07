@@ -26,6 +26,7 @@
         args))
 
     (define (start)
+      (-player 'physics -physics)
       (-player 'input -input)
       (-obstacles 'fill!)
       (start-game-loop game-loop #t))

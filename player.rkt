@@ -14,16 +14,21 @@
         (-gravity-proc  #f)
         (-reset-proc    #f)
         (-position      position)
-        (-velocity      kNullVelocity))
+        (-velocity      kNullVelocity)
+        (-size          kSize))
     (define (dispatch msg . args)
       (apply
         (case msg
+          ((physics) physics)
           ((input)   input)
           ((render)  render)
           ((update!) update!)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
+
+    (define (physics engine)
+      (engine 'player! -velocity -position -size))
 
     (define (input engine)
       (engine 'strafe -velocity)

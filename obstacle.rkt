@@ -21,6 +21,7 @@
 (define (MakeObstacle position width height #:log [-log (MakeLogger)])
   (let ((-display-shape #f)
         (-physics-shape #f)
+        (-collide-proc  #f)
         (-position      position)
         (-width         width)
         (-height        height))
@@ -40,9 +41,14 @@
 
     (define (update! delta engine)
       (unless -physics-shape (set! -physics-shape (MakeRectangle -position -width -height #:log -log)))
+      (unless -collide-proc  (set! -collide-proc  (engine 'collide -position -width -height set-color!)))
+      (-collide-proc delta)
       (-physics-shape 'update! delta engine kVelocity))
 
     (define (get-position) -position)
+
+    (define (set-color! color)
+      (-display-shape 'color! color))
 
 
     ;; Private
