@@ -8,19 +8,20 @@
 
 
 
-(define (MakeRandomObstacle #:log [-log (MakeLogger)])
-  (let* ((y      (random kMaxY))
-         (x      (+ (random kMaxX) kMinX kOffsetX))
+(define (MakeRandomObstacle offset #:log [-log (MakeLogger)])
+  (let* ((y      (+ (random kMaxY) kMinY))
+         (x      (+ (random kMaxX) (offset 'x) kMinX))
          (width  (+ (random kMaxSize) kMinSize))
          (height (+ (random kMaxSize) kMinSize))
-         (pos    (MakePosition x y)))
-    (set! kOffsetX x)
+         (pos    (MakePosition x y #:log -log)))
+    (offset 'x! x)
     (MakeObstacle pos width height #:log -log)))
 
 
 (define (MakeObstacle position width height #:log [-log (MakeLogger)])
   (let ((-display-shape #f)
         (-physics-shape #f)
+        (-collide-proc  #f)
         (-position      position)
         (-width         width)
         (-height        height))
@@ -40,9 +41,14 @@
 
     (define (update! delta engine)
       (unless -physics-shape (set! -physics-shape (MakeRectangle -position -width -height #:log -log)))
+      (unless -collide-proc  (set! -collide-proc  (engine 'collide -position -width -height set-color!)))
+      (-collide-proc delta)
       (-physics-shape 'update! delta engine kVelocity))
 
     (define (get-position) -position)
+
+    (define (set-color! color)
+      (-display-shape 'color! color))
 
 
     ;; Private
@@ -54,12 +60,12 @@
 
 
 (define kClass    'Obstacle)
-(define kVelocity (MakeVelocity -20 0))
+(define kVelocity (MakeVelocity -10 0))
 (define kColor    "black")
 
-(define kMinSize 25)
-(define kMaxSize 300)
+(define kMaxSize 200)
+(define kMinSize 50)
+(define kMaxX    800)
 (define kMaxY    300)
-(define kMaxX    500)
-(define kMinX    0)
-(define kOffsetX 800)
+(define kMinX    100)
+(define kMinY    0)

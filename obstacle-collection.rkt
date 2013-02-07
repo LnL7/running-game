@@ -1,6 +1,7 @@
 #lang racket/base
 (require "logger.rkt"
          "queue.rkt"
+         "position.rkt"
          "velocity.rkt"
          "obstacle.rkt"
          "helpers.rkt")
@@ -10,10 +11,13 @@
 
 
 (define (MakeObstacleCollection #:log [-log (MakeLogger)])
-  (let ((-collection (MakeQueue kSize #:log -log)))
+  (let ((-score      #f)
+        (-offset     (MakePosition kGenerateOffset 0))
+        (-collection (MakeQueue kSize #:log -log)))
     (define (dispatch msg . args)
       (apply
         (case msg
+          ((score!)  set-score!)
           ((render)  render)
           ((update!) update!)
           ((fill!)   fill-collection!)
@@ -31,9 +35,14 @@
                            (cleanup obstacle))))
 
     (define (fill-collection!)
-      (unless (-collection 'full?)
-        (-collection 'enqueue! (MakeRandomObstacle #:log -log))
-        (fill-collection!)))
+      (if (-collection 'full?)
+        (-offset 'x! kGenerateOffset)
+        (begin
+          (-collection 'enqueue! (MakeRandomObstacle -offset #:log -log))
+          (fill-collection!))))
+
+    (define (set-score! score)
+      (set! -score score))
 
 
     ;; Private
@@ -42,7 +51,8 @@
       (when (and
               (eq? (-collection 'peek) obstacle)
               (< (chain obstacle 'position 'x) kCleanupOffset))
-        ; (-log 'debug "removing an" 'Obstacle)
+        (-log 'debug "removing an" 'Obstacle)
+        (when -score (-score 'add))
         (-collection 'serve!)
         (fill-collection!)))
 
@@ -51,6 +61,7 @@
     dispatch))
 
 
-(define kClass         'ObstacleCollection)
-(define kSize          5)
-(define kCleanupOffset -300)
+(define kClass          'ObstacleCollection)
+(define kSize           5)
+(define kCleanupOffset  -300)
+(define kGenerateOffset 800)
