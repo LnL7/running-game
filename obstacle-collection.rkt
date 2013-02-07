@@ -1,6 +1,7 @@
 #lang racket/base
 (require "logger.rkt"
          "queue.rkt"
+         "position.rkt"
          "velocity.rkt"
          "obstacle.rkt"
          "helpers.rkt")
@@ -10,7 +11,8 @@
 
 
 (define (MakeObstacleCollection #:log [-log (MakeLogger)])
-  (let ((-collection (MakeQueue kSize #:log -log)))
+  (let ((-offset     (MakePosition kGenerateOffset 0))
+        (-collection (MakeQueue kSize #:log -log)))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -31,9 +33,11 @@
                            (cleanup obstacle))))
 
     (define (fill-collection!)
-      (unless (-collection 'full?)
-        (-collection 'enqueue! (MakeRandomObstacle #:log -log))
-        (fill-collection!)))
+      (if (-collection 'full?)
+        (-offset 'x! kGenerateOffset)
+        (begin
+          (-collection 'enqueue! (MakeRandomObstacle -offset #:log -log))
+          (fill-collection!))))
 
 
     ;; Private
@@ -51,6 +55,7 @@
     dispatch))
 
 
-(define kClass         'ObstacleCollection)
-(define kSize          5)
-(define kCleanupOffset -300)
+(define kClass          'ObstacleCollection)
+(define kSize           5)
+(define kCleanupOffset  -300)
+(define kGenerateOffset 800)
