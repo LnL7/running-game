@@ -11,11 +11,13 @@
 
 
 (define (MakeObstacleCollection #:log [-log (MakeLogger)])
-  (let ((-offset     (MakePosition kGenerateOffset 0))
+  (let ((-score      #f)
+        (-offset     (MakePosition kGenerateOffset 0))
         (-collection (MakeQueue kSize #:log -log)))
     (define (dispatch msg . args)
       (apply
         (case msg
+          ((score!)  set-score!)
           ((render)  render)
           ((update!) update!)
           ((fill!)   fill-collection!)
@@ -39,6 +41,9 @@
           (-collection 'enqueue! (MakeRandomObstacle -offset #:log -log))
           (fill-collection!))))
 
+    (define (set-score! score)
+      (set! -score score))
+
 
     ;; Private
 
@@ -46,7 +51,8 @@
       (when (and
               (eq? (-collection 'peek) obstacle)
               (< (chain obstacle 'position 'x) kCleanupOffset))
-        ; (-log 'debug "removing an" 'Obstacle)
+        (-log 'debug "removing an" 'Obstacle)
+        (when -score (-score 'add))
         (-collection 'serve!)
         (fill-collection!)))
 

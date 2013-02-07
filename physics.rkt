@@ -14,6 +14,7 @@
     (define (dispatch msg . args)
       (apply
         (case msg
+          ((game!)     set-game!)
           ((player!)   set-player!)
           ((rectangle) shape-rectangle)
           ((gravity)   gravity)
@@ -38,6 +39,9 @@
     (define (collide . args)
       (lambda (delta)
         (apply -collision 'collide delta args)))
+
+    (define (set-game! . args)
+      (apply -collision 'game! args))
 
     (define (set-player! . args)
       (apply -collision 'player! args))

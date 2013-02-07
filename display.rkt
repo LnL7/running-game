@@ -38,7 +38,7 @@
           (fill-ellipse! x y width height color)))))
 
   (define (shape-image rectangle)
-    (let ((pos   (rectangle 'position)))
+    (let ((pos (rectangle 'position)))
       (lambda ()
         (let ((x (pos 'x))
               (y (pos 'y))

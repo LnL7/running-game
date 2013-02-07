@@ -18,25 +18,26 @@
       args))
 
   (define (player-jump is-jumping? start-jumping velocity)
-    (on-key! #\w (lambda ()
+    (let ((jump (lambda ()
                    (unless (is-jumping?)
-                     (-log 'debug "key-down" 'w)
                      (start-jumping)
                      (velocity 'add! kJumpVelocity))))
-    ; (on-release! #\w (lambda ()
-    ;                    (when (is-jumping?)
-    ;                      (-log 'debug "key-up" 'w)
-    ;                      (velocity 'vertical! 30))))
-    (on-key! #\s (lambda ()
+          (fall (lambda ()
                    (when (is-jumping?)
-                     (-log 'debug "key-down" 's)
                      (velocity 'add! kFallVelocity)))))
 
+      (on-key! 'up jump)
+      (on-key! #\w jump)
+      (on-key! 'down fall)
+      (on-key! #\s fall)))
+
   (define (player-strafe velocity)
-    (on-key! #\d (lambda ()
-                   (velocity 'horizontal! kRightStrafeSpeed)))
-    (on-key! #\a (lambda ()
-                   (velocity 'horizontal! kLeftStrafeSpeed))))
+    (let ((left  (lambda () (velocity 'horizontal! kLeftStrafeSpeed)))
+          (right (lambda () (velocity 'horizontal! kRightStrafeSpeed))))
+      (on-key! 'left left)
+      (on-key! #\a left)
+      (on-key! 'right right)
+      (on-key! #\d right)))
 
 
   ;; Private
