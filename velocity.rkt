@@ -1,47 +1,56 @@
 #lang racket/base
-(require "helpers.rkt")
+(require "logger.rkt"
+         "helpers.rkt")
 (provide MakeVelocity)
 
 
 
-(define (MakeVelocity horizontal vertical)
-  (let ((_horizontal horizontal)
-        (_vertical vertical))
+(define (MakeVelocity horizontal vertical #:log [-log (MakeLogger)])
+  (let ((-horizontal horizontal)
+        (-vertical   vertical))
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((horizontal)  get_horizontal)
-          ((vertical)    get_vertical)
-          ((horizontal!) set_horizontal!)
-          ((vertical!)   set_vertical!)
-          ((copy)        copy_velocity)
-          ((scale!)      scale_number!)
-          ((add!)        add_velocity!)
+          ((horizontal)  get-horizontal)
+          ((vertical)    get-vertical)
+          ((horizontal!) set-horizontal!)
+          ((vertical!)   set-vertical!)
+          ((copy)        copy-velocity)
+          ((scale!)      scale-number!)
+          ((add!)        add-velocity!)
           ((render)      render)
           (else
-            (method_missing msg dispatch)))
+            (-log 'fatal "method missing" msg kClass)))
         args))
 
-    (define (get_horizontal) _horizontal)
-    (define (get_vertical)   _vertical)
+    (define (get-horizontal) -horizontal)
+    (define (get-vertical)   -vertical)
 
-    (define (set_horizontal! horizontal) (set! _horizontal horizontal))
-    (define (set_vertical! vertical)     (set! _vertical vertical))
+    (define (set-horizontal! horizontal) (set! -horizontal horizontal))
+    (define (set-vertical! vertical)     (set! -vertical vertical))
 
-    (define (copy_velocity) (MakeVelocity _horizontal _vertical))
+    (define (copy-velocity) (MakeVelocity -horizontal -vertical))
 
-    (define (scale_number! scale)
+    (define (scale-number! scale)
       (unless (= scale 1)
-        (set! _horizontal (* scale _horizontal))
-        (set! _vertical (* scale _vertical)))
+        (set! -horizontal (* scale -horizontal))
+        (set! -vertical (* scale -vertical)))
       dispatch)
 
-    (define (add_velocity! vel)
-      (set! _horizontal (+ (vel 'horizontal) _horizontal))
-      (set! _vertical   (+ (vel 'vertical) _vertical))
+    (define (add-velocity! vel)
+      (set! -horizontal (+ (vel 'horizontal) -horizontal))
+      (set! -vertical   (+ (vel 'vertical) -vertical))
       dispatch)
 
     (define (render engine)
       (engine 'velocity dispatch))
 
+
+    ;; Private
+
+    (-log 'debug "initialized" kClass)
+
     dispatch))
+
+
+(define kClass 'Velocity)

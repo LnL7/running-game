@@ -7,11 +7,11 @@
 
 (test-case
   "Velocity"
-  (let ((display_engine (MakeStub 'velocity))
+  (let ((display-engine (MakeStub 'velocity))
         (velocity       (MakeVelocity 1 2)))
     (check-eq? (velocity 'horizontal) 1)
     (check-eq? (velocity 'vertical) 2)
-    (check-not-exn (lambda () (velocity 'render display_engine)))
+    (check-not-exn (lambda () (velocity 'render display-engine)))
     (check-exn
       exn:fail?
       (lambda () (velocity 'foobar)))))
@@ -36,7 +36,7 @@
 (test-case
   "Velocity.copy"
   (let* ((velocity (MakeVelocity 1 2))
-         (copy_vel (velocity 'copy)))
-    (copy_vel 'add! (MakeVelocity 3 4))
+         (copy-vel (velocity 'copy)))
+    (copy-vel 'add! (MakeVelocity 3 4))
     (check-eq? (velocity 'horizontal) 1)
     (check-eq? (velocity 'vertical)   2)))

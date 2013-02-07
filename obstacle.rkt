@@ -1,38 +1,65 @@
 #lang racket/base
-(require "shape.rkt"
+(require "logger.rkt"
+         "shape.rkt"
          "helpers.rkt")
 (provide (all-from-out "shape.rkt")
-         MakeObstacle)
+         MakeObstacle
+         MakeRandomObstacle)
 
 
 
-(define (MakeObstacle position width height)
-  (let ((_display_shape #f)
-        (_physics_shape #f)
-        (_position      position)
-        (_width         width)
-        (_height        height))
+(define (MakeRandomObstacle #:log [-log (MakeLogger)])
+  (let* ((y      (random kMaxY))
+         (x      (+ (random kMaxX) kMinX kOffsetX))
+         (width  (+ (random kMaxSize) kMinSize))
+         (height (+ (random kMaxSize) kMinSize))
+         (pos    (MakePosition x y)))
+    (set! kOffsetX x)
+    (MakeObstacle pos width height #:log -log)))
+
+
+(define (MakeObstacle position width height #:log [-log (MakeLogger)])
+  (let ((-display-shape #f)
+        (-physics-shape #f)
+        (-position      position)
+        (-width         width)
+        (-height        height))
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((render)  render)
-          ((update!) update!)
+          ((position) get-position)
+          ((render)   render)
+          ((update!)  update!)
           (else
-            (method_missing msg dispatch)))
+            (-log 'fatal "method missing" msg kClass)))
         args))
 
     (define (render engine)
-      (unless _display_shape (set! _display_shape (MakeRectangle _position _width _height COLOR)))
-      (_display_shape 'render engine))
+      (unless -display-shape (set! -display-shape (MakeRectangle -position -width -height kColor #:log -log)))
+      (-display-shape 'render engine))
 
-    (define (update! engine)
-      (unless _physics_shape (set! _physics_shape (MakeRectangle _position _width _height)))
-      (_physics_shape 'move! engine VELOCITY))
+    (define (update! delta engine)
+      (unless -physics-shape (set! -physics-shape (MakeRectangle -position -width -height #:log -log)))
+      (-physics-shape 'update! delta engine kVelocity))
+
+    (define (get-position) -position)
+
 
     ;; Private
+
+    ; (-log 'debug "initialized" kClass -position -width -height)
 
     dispatch))
 
 
-(define VELOCITY (MakeVelocity -5 0))
-(define COLOR    "black")
+
+(define kClass    'Obstacle)
+(define kVelocity (MakeVelocity -20 0))
+(define kColor    "black")
+
+(define kMinSize 25)
+(define kMaxSize 300)
+(define kMaxY    400)
+(define kMaxX    400)
+(define kMinX    0)
+(define kOffsetX 800)
