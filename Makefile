@@ -1,7 +1,7 @@
 .PHONY: test tags clean
 
 test:
-	find . -name "*_test.rkt" -exec racket {} \;
+	find . -name "*-test.rkt" -exec racket {} \;
 
 tags:
 	ctags --langmap=scheme:.rkt -R .

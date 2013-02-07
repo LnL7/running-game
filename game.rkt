@@ -1,58 +1,48 @@
 #lang racket/base
 (require "lib/canvas.rkt"
+         "logger.rkt"
          "player.rkt"
-         "obstacle.rkt"
-         "display.rkt"
+         "obstacle-collection.rkt"
          "physics.rkt"
          "input.rkt"
+         "display.rkt"
          "helpers.rkt")
 (provide MakeGame)
 
 
 
-(define (MakeGame)
-  (let ((_player    #f)
-        (_obstacles '())
-        (_display   (MakeDisplay))
-        (_physics   (MakePhysics))
-        (_input     (MakeInput)))
+(define (MakeGame #:log [-log (MakeLogger)])
+  (let ((-player    (MakePlayer kPlayerPosition #:log -log))
+        (-obstacles (MakeObstacleCollection #:log -log))
+        (-display   (MakeDisplay #:log -log))
+        (-physics   (MakePhysics #:log -log))
+        (-input     (MakeInput #:log -log)))
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((player)    start_player)
-          ((obstacles) start_obstacles)
-          ((loop)      start_loop)
+          ((start) start)
           (else
-            (method_missing msg dispatch)))
+            (-log 'fatal "method missing" msg kClass)))
         args))
 
-    (define (start_player)
-      (let ((position (MakePosition 200 200)))
-        (set! _player (MakePlayer position))))
+    (define (start)
+      (-player 'input -input)
+      (-obstacles 'fill!)
+      (start-game-loop game-loop #t))
 
-    (define (start_obstacles)
-      (let ((obstacles (list
-                         (MakeObstacle (MakePosition 600 100) 300 100)
-                         (MakeObstacle (MakePosition 900 300) 100 200))))
-        (set! _obstacles obstacles)))
-
-    (define (start_loop)
-      (when _player (_player 'input _input))
-      (start-game-loop
-        (lambda (delta)
-          (let ((objects (cons _player _obstacles)))
-            (for-each
-              (lambda (obj) ((object_loop obj) delta))
-              objects)))
-        #t))
 
     ;; Private
 
-    (define (object_loop obj)
-      (if obj
-        (lambda (delta)
-          ((obj 'render _display)  delta)
-          ((obj 'update! _physics) delta))
-        (lambda (delta) #f)))
+    (define (game-loop delta)
+      (-player    'render -display)
+      (-obstacles 'render -display)
+      (-player    'update! delta -physics)
+      (-obstacles 'update! delta -physics))
+
+    (-log 'debug "initialized" kClass)
 
     dispatch))
+
+
+(define kClass          'Game)
+(define kPlayerPosition (MakePosition 200 200))

@@ -1,42 +1,53 @@
 #lang racket/base
-(require "lib/canvas.rkt"
+(require "logger.rkt"
+         "lib/canvas.rkt"
          "velocity.rkt"
          "helpers.rkt")
 (provide MakeInput)
 
 
 
-(define (MakeInput)
+(define (MakeInput #:log [-log (MakeLogger)])
   (define (dispatch msg . args)
     (apply
       (case msg
-        ((jump)   player_jump)
-        ((strafe) player_strafe)
+        ((jump)   player-jump)
+        ((strafe) player-strafe)
         (else
-          (method_missing msg dispatch)))
+          (-log 'fatal "method missing" msg kClass)))
       args))
 
-  (define (player_jump is_jumping? start_jumping velocity)
+  (define (player-jump is-jumping? start-jumping velocity)
     (on-key! #\w (lambda ()
-                   (unless (is_jumping?)
-                     (start_jumping)
-                     (velocity 'add! JUMP_VELOCITY))))
+                   (unless (is-jumping?)
+                     (-log 'debug "key-down" 'w)
+                     (start-jumping)
+                     (velocity 'add! kJumpVelocity))))
+    (on-release! #\w (lambda ()
+                       (when (is-jumping?)
+                         (-log 'debug "key-up" 'w)
+                         (velocity 'vertical! 30))))
     (on-key! #\s (lambda ()
-                   (when (is_jumping?)
-                     (velocity 'add! FALL_VELOCITY)))))
+                   (when (is-jumping?)
+                     (-log 'debug "key-down" 's)
+                     (velocity 'add! kFallVelocity)))))
 
-  (define (player_strafe position)
+  (define (player-strafe velocity)
     (on-key! #\d (lambda ()
-                   (position 'add! STRAFE_RIGHT_VELOCITY)))
+                   (velocity 'horizontal! kRightStrafeSpeed)))
     (on-key! #\a (lambda ()
-                   (position 'add! STRAFE_LEFT_VELOCITY))))
+                   (velocity 'horizontal! kLeftStrafeSpeed))))
+
 
   ;; Private
+
+  (-log 'debug "initialized" kClass)
 
   dispatch)
 
 
-(define JUMP_VELOCITY         (MakeVelocity 0 100))
-(define FALL_VELOCITY         (MakeVelocity 0 -10))
-(define STRAFE_RIGHT_VELOCITY (MakeVelocity 1 0))
-(define STRAFE_LEFT_VELOCITY  (MakeVelocity -1 0))
+(define kClass               'Input)
+(define kJumpVelocity        (MakeVelocity 0 100))
+(define kFallVelocity        (MakeVelocity 0 -10))
+(define kRightStrafeSpeed    20)
+(define kLeftStrafeSpeed     -20)
