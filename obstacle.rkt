@@ -59,7 +59,7 @@
 
 (define kMinSize 25)
 (define kMaxSize 300)
-(define kMaxY    400)
-(define kMaxX    400)
+(define kMaxY    300)
+(define kMaxX    500)
 (define kMinX    0)
 (define kOffsetX 800)

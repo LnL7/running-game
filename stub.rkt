@@ -5,10 +5,10 @@
 
 
 
-(define (MakeStub #:log [-log (MakeLogger)] . methods)
+(define (MakeStub #:log [-log (MakeLogger)] . -methods)
   (define (dispatch msg . args)
     (apply
-      (let --iter ((lst methods))
+      (let --iter ((lst -methods))
         (if (null? lst)
           (-log 'fatal "method missing" msg kClass)
           (let ((head (car lst)))

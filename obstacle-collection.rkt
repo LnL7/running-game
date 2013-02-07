@@ -4,7 +4,8 @@
          "velocity.rkt"
          "obstacle.rkt"
          "helpers.rkt")
-(provide MakeObstacleCollection)
+(provide MakeObstacleCollection
+         (rename-out [kSize kObstacleCollectionSize]))
 
 
 
@@ -20,13 +21,13 @@
             (-log 'fatal "method missing" msg kClass)))
         args))
 
-    (define (render . args)
+    (define (render engine)
       (-collection 'each (lambda (obstacle)
-                           (apply obstacle 'render args))))
+                           (obstacle 'render engine))))
 
-    (define (update! delta . args)
+    (define (update! delta engine)
       (-collection 'each (lambda (obstacle)
-                           (apply obstacle 'update! delta args)
+                           (obstacle 'update! delta engine)
                            (cleanup obstacle))))
 
     (define (fill-collection!)
