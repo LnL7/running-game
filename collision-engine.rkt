@@ -15,7 +15,7 @@
           (-log 'fatal "method missing" msg kClass)))
       args))
 
-  (define (player-reset velocity position end-jumping)
+  (define (player-reset delta velocity position end-jumping)
     (when (< (position 'x) kLeft)
       (position 'x! kLeft)
       (velocity 'horizontal! kBounceSpeed))
@@ -25,7 +25,7 @@
       (velocity 'horizontal! (- kBounceSpeed)))
 
     (when (< (position 'y) kBottom)
-      (when end-jumping (end-jumping))
+      (end-jumping)
       (position 'y! kBottom)
       (velocity 'vertical! kBounceSpeed))
 
@@ -46,4 +46,4 @@
 (define kRight       750)
 (define kBottom      0)
 (define kTop         500)
-(define kBounceSpeed 10)
+(define kBounceSpeed 20)

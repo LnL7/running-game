@@ -22,7 +22,7 @@
       (vel 'scale! (/ delta 100))
       (pos 'move! vel)))
 
-  (define (gravity delta velocity position end-jumping)
+  (define (gravity delta velocity position)
     (let ((vel     (velocity 'copy))
           (gravity (kGravityVelocity 'copy)))
       (velocity 'add! (vel 'scale! (/ delta -1000)))

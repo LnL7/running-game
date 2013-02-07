@@ -5,7 +5,7 @@
 
 
 (define (MakeLogger #:debug [-debug #f] #:warn [-warn #t] #:fatal [-fatal #t])
-  (let ((-scope 0))
+ (let ((-scope 0))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -93,6 +93,9 @@
         (display high)
         (dedent!)))
 
+
+    ;; Logger
+
     (define (debug message sym . args)
       (cond
         ((eq? -debug #f)  -debug)
@@ -108,7 +111,7 @@
     (define (warning message sym . args)
       (cond
         ((eq? -warn #f)  -warn)
-        ((symbol? -warn) (apply display -warn message sym args))
+        ((symbol? -warn) (apply dispatch -warn message sym args))
         (else
           (scope)
           (display "=====> ")

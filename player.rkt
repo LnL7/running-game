@@ -11,6 +11,8 @@
   (let ((-is-jumping    #t)
         (-display-shape #f)
         (-physics-shape #f)
+        (-gravity-proc  #f)
+        (-reset-proc    #f)
         (-position      position)
         (-velocity      kNullVelocity))
     (define (dispatch msg . args)
@@ -31,23 +33,20 @@
       (unless -display-shape (set! -display-shape (MakeImage -position kSize kSize kPath #:log -log)))
       (-display-shape 'render engine))
 
-    (define (update! engine)
-      (unless -physics-shape (set! -physics-shape (MakeRectangle -position kSize kSize #:log -log)))
-      (lambda args
-        (apply (engine 'gravity -velocity -position end-jumping) args)
-        (apply (-physics-shape 'move! engine -velocity) args)))
+    (define (update! delta engine)
+      (unless -physics-shape  (set! -physics-shape (MakeRectangle -position kSize kSize #:log -log)))
+      (unless -reset-proc     (set! -reset-proc    (engine 'reset -velocity -position end-jumping)))
+      (unless -gravity-proc   (set! -gravity-proc  (engine 'gravity -velocity -position)))
+      (-reset-proc delta)
+      (-gravity-proc delta)
+      (-physics-shape 'update! delta engine -velocity))
+
 
     ;; Private
 
     (define (get-is-jumping?) -is-jumping)
-
-    (define (end-jumping)
-      (-log 'debug "end jumping" kClass)
-      (set! -is-jumping #f))
-
-    (define (start-jumping)
-      (-log 'debug "start jumping" kClass)
-      (set! -is-jumping #t))
+    (define (end-jumping) (set! -is-jumping #f))
+    (define (start-jumping) (set! -is-jumping #t))
 
     (-log 'debug "initialized" kClass)
 

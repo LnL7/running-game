@@ -24,10 +24,12 @@
 
 
 (define (MakeShape type position width height color-or-path #:log [-log (MakeLogger)])
-  (let ((-type     type)
-        (-position position)
-        (-width    width)
-        (-height   height))
+  (let ((-render-proc #f)
+        (-update-proc #f)
+        (-type        type)
+        (-position    position)
+        (-width       width)
+        (-height      height))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -36,7 +38,7 @@
           ((width)    get-width)
           ((height)   get-height)
           ((render)   render)
-          ((move!)    move!)
+          ((update!)  update!)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
@@ -47,14 +49,17 @@
     (define (get-height)   -height)
 
     (define (render engine)
-      (engine type dispatch color-or-path))
+      (unless -render-proc (set! -render-proc (engine type dispatch color-or-path)))
+      (-render-proc))
 
-    (define (move! engine velocity)
-      (engine type dispatch velocity))
+    (define (update! delta engine velocity)
+      (unless -update-proc (set! -update-proc (engine type dispatch velocity)))
+      (-update-proc delta))
+
 
     ;; Private
 
-    (-log 'debug "initialized" kClass)
+    ; (-log 'debug "initialized" kClass)
 
     dispatch))
 

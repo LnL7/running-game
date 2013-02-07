@@ -16,6 +16,7 @@
         (case msg
           ((rectangle) shape-rectangle)
           ((gravity)   gravity)
+          ((reset)     reset)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
@@ -25,9 +26,12 @@
         (apply -update 'rectangle delta args)))
 
     (define (gravity . args)
-      (apply -collision 'reset args)
       (lambda (delta)
         (apply -update 'gravity delta args)))
+
+    (define (reset . args)
+      (lambda (delta)
+        (apply -collision 'reset delta args)))
 
 
     ;; Private
