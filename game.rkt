@@ -1,7 +1,7 @@
 #lang racket/base
 (require "lib/canvas.rkt"
          "logger.rkt"
-         "score.rkt"
+         "menu.rkt"
          "player.rkt"
          "obstacle-collection.rkt"
          "physics.rkt"
@@ -13,7 +13,7 @@
 
 
 (define (MakeGame #:log [-log (MakeLogger)])
-  (let ((-score     #f)
+  (let ((-menu      #f)
         (-player    #f)
         (-obstacles #f)
         (-display   #f)
@@ -32,17 +32,17 @@
       (start-game-loop menu-loop #t))
 
     (define (start)
-      (set! -score     (MakeScore #:log -log))
+      (set! -menu      (MakeMenu #:log -log))
       (set! -player    (MakePlayer kPlayerPosition #:log -log))
       (set! -obstacles (MakeObstacleCollection #:log -log))
       (set! -display   (MakeDisplay #:log -log))
       (set! -physics   (MakePhysics #:log -log))
       (set! -input     (MakeInput #:log -log))
 
+      (-menu 'score -obstacles)
       (-physics 'game! dispatch)
       (-player 'physics -physics)
       (-player 'input -input)
-      (-obstacles 'score! -score)
       (-obstacles 'fill!)
       (start-game-loop game-loop #t))
 
@@ -56,9 +56,7 @@
       (-obstacles 'update! delta -physics))
 
     (define (menu-loop delta)
-      (let ((score (number->string (-score 'current))))
-        (draw-text! 250 400 "Game Over!" "blue" (make-font #:size 64 #:face "Junction"))
-        (draw-text! 400 300 score "blue" (make-font #:size 32 #:face "Junction"))))
+      (-menu 'render -display))
 
     (-log 'debug "initialized" kClass)
 
