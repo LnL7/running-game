@@ -47,11 +47,12 @@
 
     (define (get-position) -position)
 
+
+    ;; Private
+
     (define (set-color! color)
       (-display-shape 'color! color))
 
-
-    ;; Private
 
     ; (-log 'debug "initialized" kClass -position -width -height)
 
