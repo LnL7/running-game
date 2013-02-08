@@ -1,4 +1,7 @@
-.PHONY: test tags clean
+.PHONY: run test tags clean
+
+run:
+	racket test/game-start.rkt
 
 test:
 	find . -name "*-test.rkt" -exec racket {} \;
