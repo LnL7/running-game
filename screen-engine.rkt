@@ -14,6 +14,7 @@
         ((rectangle) shape-rectangle)
         ((ellipse)   shape-ellipse)
         ((image)     shape-image)
+        ((text)      text)
         (else
           (-log 'fatal "method missing" msg kClass)))
       args))
@@ -22,26 +23,36 @@
     (let ((width  (rectangle 'width))
           (height (rectangle 'height))
           (pos    (rectangle 'position)))
-      (let ((x     (pos 'x))
-            (y     (pos 'y))
-            (color (find-color (rectangle 'color))))
-        (fill-rectangle! x y width height color))))
+      (lambda ()
+        (let ((x     (pos 'x))
+              (y     (pos 'y))
+              (color (find-color (rectangle 'color))))
+          (fill-rectangle! x y width height color)))))
 
   (define (shape-ellipse ellipse)
     (let ((width  (ellipse 'width))
           (height (ellipse 'height))
           (pos    (ellipse 'position)))
-      (let ((x     (pos 'x))
-            (y     (pos 'y))
-            (color (find-color (ellipse 'color))))
-        (fill-ellipse! x y width height color))))
+      (lambda ()
+        (let ((x     (pos 'x))
+              (y     (pos 'y))
+              (color (find-color (ellipse 'color))))
+          (fill-ellipse! x y width height color)))))
 
   (define (shape-image rectangle)
     (let ((pos (rectangle 'position)))
-      (let ((x (pos 'x))
-            (y (pos 'y))
-            (image (make-image (rectangle 'path) 'png/alpha)))
-        (draw-image! x y image))))
+      (lambda ()
+        (let ((x (pos 'x))
+              (y (pos 'y))
+              (image (make-image (rectangle 'path) 'png/alpha)))
+          (draw-image! x y image)))))
+
+  (define (text pos message color-name)
+    (let ((font (make-font #:size 64 #:face "Verdana")))
+      (lambda ()
+        (let ((x    (pos 'x))
+              (y    (pos 'y)))
+          (draw-text! x y message (find-color color-name) font)))))
 
 
   ;; Private
@@ -52,4 +63,4 @@
 
 
 (define kClass    'ScreenEngine)
-(define kMessages '(rectangle ellipse image))
+(define kMessages '(rectangle ellipse image text))

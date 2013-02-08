@@ -11,11 +11,10 @@
   (let ((-screen  (MakeScreenEngine #:log -log))
         (-console (MakeConsoleEngine #:log -log)))
     (define (dispatch msg . args)
-      (lambda ()
-        (apply
-          (if (memq msg kScreenEngineMessages) -screen -console)
-          msg
-          args)))
+      (apply
+        (if (memq msg kScreenEngineMessages) -screen -console)
+        msg
+        args))
 
 
     ;; Private
