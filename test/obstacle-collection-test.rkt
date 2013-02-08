@@ -4,27 +4,21 @@
          "../obstacle-collection.rkt")
 
 
-(define kRectangleList
-  (let --iter ((ctr 0)
-               (acc '()))
-    (if (eq? ctr kObstacleCollectionSize)
-      acc
-      (--iter
-        (+ ctr 1)
-        (cons 'rectangle acc)))))
-
 
 (test-case
   "Obstacle Collection"
   (let* ((collection   (MakeObstacleCollection))
          (engine-proc  (lambda args (lambda args #t)))
          (engine-mock  (MakeMock
+                         (list 'collide engine-proc)
                          (list 'rectangle engine-proc))))
     (collection 'fill!)
     (collection 'render engine-mock)
-    (check-equal? (engine-mock 'messages) kRectangleList)
+    (check memq 'rectangle (engine-mock 'messages))
     (collection 'update! 0 engine-mock)
-    (check-equal? (engine-mock 'messages) kRectangleList)
+    (let ((messages (engine-mock 'messages)))
+      (check memq 'collide messages)
+      (check memq 'rectangle messages))
     (check-exn
       exn:fail?
       (lambda () (collection 'foobar)))))
