@@ -44,7 +44,7 @@
       (lambda ()
         (let ((x (pos 'x))
               (y (pos 'y))
-              (image (make-image (rectangle 'path) 'png/alpha)))
+              (image (make-image (rectangle 'path))))
           (draw-image! x y image)))))
 
   (define (text pos message color-name)
