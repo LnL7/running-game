@@ -2,9 +2,9 @@
 (provide chain)
 
 
-(define (chain object . messages)
-  (if (null? messages)
-    object
-    (let ((head (car messages))
-          (tail (cdr messages)))
-      (apply chain (object head) tail))))
+
+(define-syntax chain
+  (syntax-rules ()
+    [(chain expr)                                    expr]
+    [(chain object ('method-msg args ...) exprs ...) (chain (object 'method-msg args ...) exprs ...)]
+    [(chain object 'method-msg exprs ...)            (chain (object 'method-msg) exprs ...)]))
