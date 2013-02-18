@@ -14,21 +14,21 @@
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((score)  apply-score)
+          ((score)  get-score)
           ((render) render)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
 
-    (define (apply-score object)
-      (object 'score! -score))
+    ;; Properties
+    (define (get-score) -score)
 
     (define (render engine)
-      (unless -message-proc (set! -message-proc (engine 'text (MakePosition 250 400 #:log -log) "Game Over!" "black")))
-      (unless -score-proc   (set! -score-proc   (engine 'text (MakePosition 400 300 #:log -log)
-                                                        (number->string (-score 'current)) "black")))
+      (unless -message-proc (set! -message-proc (engine 'text kMessagePosition "Game Over!" kColor)))
+      (unless -score-proc   (set! -score-proc   (engine 'text kScorePosition (-score 'current) kColor)))
       (-message-proc)
-      (-score-proc))
+      (-score-proc)
+      dispatch)
 
 
     ;; Private
@@ -36,4 +36,8 @@
     dispatch))
 
 
-(define kClass 'Menu)
+(define kClass           'Menu)
+(define kMessagePosition (MakePosition 250 400))
+(define kScorePosition   (MakePosition 400 300))
+(define kMessage         "Game Over!")
+(define kColor           "black")
