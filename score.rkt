@@ -20,8 +20,8 @@
             (-log 'fatal "method missing" msg kClass)))
         args))
 
-    (define (get-current) (number->string -current))
-    (define (get-highest) (number->string -highest))
+    (define (get-current) -current)
+    (define (get-highest) -highest)
 
     (define (add-current)
       (set! -current (+ -current 1)))
@@ -33,6 +33,11 @@
 
     (define (render engine)
       (engine 'score dispatch))
+
+
+    ;; Private
+
+    (-log 'debug "initialized" kClass)
 
     dispatch))
 

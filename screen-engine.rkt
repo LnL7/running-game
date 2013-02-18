@@ -47,8 +47,8 @@
               (image (make-image (rectangle 'path))))
           (draw-image! x y image)))))
 
-  (define (text pos message color-name)
-    (let ((font (make-font #:size 64 #:face "Verdana")))
+  (define (text message pos color-name)
+    (let ((font (make-font #:face kFontFace #:size kFontSize)))
       (lambda ()
         (let ((x    (pos 'x))
               (y    (pos 'y)))
@@ -63,4 +63,6 @@
 
 
 (define kClass    'ScreenEngine)
-(define kMessages '(rectangle ellipse image text))
+(define kMessages '(rectangle ellipse image score text))
+(define kFontFace "Verdana")
+(define kFontSize 64)

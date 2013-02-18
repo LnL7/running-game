@@ -8,7 +8,7 @@
 
 
 (define (MakeWorld #:log [-log (MakeLogger)])
-  (let ((-player    (MakePlayer kPlayerPosition #:log -log))
+  (let ((-player    (MakePlayer (kPlayerPosition 'copy) #:log -log))
         (-obstacles (MakeObstacleCollection #:log -log)))
     (define (dispatch msg . args)
       (apply

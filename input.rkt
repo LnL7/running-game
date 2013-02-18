@@ -8,43 +8,54 @@
 
 
 (define (MakeInput #:log [-log (MakeLogger)])
-  (define (dispatch msg . args)
-    (apply
-      (case msg
-        ((jump)   player-jump)
-        ((strafe) player-strafe)
-        (else
-          (-log 'fatal "method missing" msg kClass)))
-      args))
+  (let ((-game #f))
+    (define (dispatch msg . args)
+      (apply
+        (case msg
+          ((game!)  set-game!)
+          ((world)  world-start)
+          ((jump)   player-jump)
+          ((strafe) player-strafe)
+          (else
+            (-log 'fatal "method missing" msg kClass)))
+        args))
 
-  (define (player-jump is-jumping? start-jumping velocity)
-    (let ((jump (lambda ()
-                   (unless (is-jumping?)
-                     (start-jumping)
-                     (velocity 'add! kJumpVelocity))))
-          (fall (lambda ()
-                   (when (is-jumping?)
-                     (velocity 'add! kFallVelocity)))))
+    ;; Properties
 
-      (on-key! 'up jump)
-      (on-key! #\w jump)
-      (on-key! 'down fall)
-      (on-key! #\s fall)))
-
-  (define (player-strafe velocity)
-    (let ((left  (lambda () (velocity 'horizontal! kLeftStrafeSpeed)))
-          (right (lambda () (velocity 'horizontal! kRightStrafeSpeed))))
-      (on-key! 'left left)
-      (on-key! #\a left)
-      (on-key! 'right right)
-      (on-key! #\d right)))
+    (define (set-game! game) (set! -game game))
 
 
-  ;; Private
+    (define (world-start)
+      (on-key! #\return (lambda () (when -game (-game 'world)))))
 
-  (-log 'debug "initialized" kClass)
+    (define (player-jump is-jumping? start-jumping velocity)
+      (let ((jump (lambda ()
+                     (unless (is-jumping?)
+                       (start-jumping)
+                       (velocity 'add! kJumpVelocity))))
+            (fall (lambda ()
+                     (when (is-jumping?)
+                       (velocity 'add! kFallVelocity)))))
 
-  dispatch)
+        (on-key! 'up jump)
+        (on-key! #\w jump)
+        (on-key! 'down fall)
+        (on-key! #\s fall)))
+
+    (define (player-strafe velocity)
+      (let ((left  (lambda () (velocity 'horizontal! kLeftStrafeSpeed)))
+            (right (lambda () (velocity 'horizontal! kRightStrafeSpeed))))
+        (on-key! 'left left)
+        (on-key! #\a left)
+        (on-key! 'right right)
+        (on-key! #\d right)))
+
+
+    ;; Private
+
+    (-log 'debug "initialized" kClass)
+
+    dispatch))
 
 
 (define kClass               'Input)

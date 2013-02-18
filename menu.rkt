@@ -1,31 +1,26 @@
 #lang racket/base
 (require "logger.rkt"
-         "score.rkt"
          "position.rkt"
          "helpers.rkt")
 (provide MakeMenu)
 
 
 
-(define (MakeMenu #:log [-log (MakeLogger)])
+(define (MakeMenu score #:log [-log (MakeLogger)])
   (let ((-message-proc #f)
         (-score-proc   #f)
-        (-score        (MakeScore #:log -log)))
+        (-score        score))
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((score)  get-score)
           ((render) render)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
 
-    ;; Properties
-    (define (get-score) -score)
-
     (define (render engine)
-      (unless -message-proc (set! -message-proc (engine 'text kMessagePosition "Game Over!" kColor)))
-      (unless -score-proc   (set! -score-proc   (engine 'text kScorePosition (-score 'current) kColor)))
+      (unless -message-proc (set! -message-proc (engine 'text kMessage kMessagePosition kColor)))
+      (unless -score-proc   (set! -score-proc   (engine 'text (score-helper -score) kScorePosition kColor)))
       (-message-proc)
       (-score-proc)
       dispatch)
@@ -33,7 +28,13 @@
 
     ;; Private
 
+    (-log 'debug "initialized" kClass)
+
     dispatch))
+
+
+(define (score-helper score)
+  (number->string (score 'current)))
 
 
 (define kClass           'Menu)

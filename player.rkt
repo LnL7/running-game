@@ -13,9 +13,9 @@
         (-physics-shape #f)
         (-gravity-proc  #f)
         (-reset-proc    #f)
+        (-size          kSize)
         (-position      position)
-        (-velocity      kNullVelocity)
-        (-size          kSize))
+        (-velocity      (kNullVelocity 'copy)))
     (define (dispatch msg . args)
       (apply
         (case msg
