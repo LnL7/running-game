@@ -10,7 +10,7 @@
 (define (MakeMenu #:log [-log (MakeLogger)])
   (let ((-message-proc #f)
         (-score-proc   #f)
-        (-score        (MakeScore)))
+        (-score        (MakeScore #:log -log)))
     (define (dispatch msg . args)
       (apply
         (case msg

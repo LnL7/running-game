@@ -16,7 +16,7 @@
         ((image)     shape-image)
         ((text)      text)
         (else
-          (-log 'fatal "method missing" msg kClass)))
+          (lambda args (-log 'warn "method missing" msg kClass))))
       args))
 
   (define (shape-rectangle rectangle)
