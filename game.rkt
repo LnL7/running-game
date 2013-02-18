@@ -29,7 +29,8 @@
         args))
 
     (define (end)
-      (start-game-loop menu-loop #t))
+      (start-game-loop menu-loop #t)
+      dispatch)
 
     (define (start)
       (set! -menu      (MakeMenu #:log -log))
@@ -39,29 +40,36 @@
       (set! -physics   (MakePhysics #:log -log))
       (set! -input     (MakeInput #:log -log))
 
-      (-menu 'score -obstacles)
       (-physics 'game! dispatch)
       (-player 'physics -physics)
       (-player 'input -input)
       (-obstacles 'fill!)
-      (start-game-loop game-loop #t))
+      (-obstacles 'score! (-menu 'score))
+      (start-game-loop game-loop #t)
+      dispatch)
 
 
     ;; Private
 
     (define (game-loop delta)
-      (-player    'render -display)
-      (-obstacles 'render -display)
-      (-player    'update! delta -physics)
-      (-obstacles 'update! delta -physics))
+      (let ((percentage (scale-helper delta)))
+        (-player    'render -display)
+        (-obstacles 'render -display)
+        (-player    'update! percentage -physics)
+        (-obstacles 'update! percentage -physics)
+        dispatch))
 
     (define (menu-loop delta)
-      (-menu 'render -display))
+      (-menu 'render -display)
+      dispatch)
 
     (-log 'debug "initialized" kClass)
 
     dispatch))
 
+
+;; (time-delta -> percentage)
+(define (scale-helper delta) (/ delta 100))
 
 (define kClass          'Game)
 (define kPlayerPosition (MakePosition 200 200))

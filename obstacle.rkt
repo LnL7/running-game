@@ -41,7 +41,7 @@
 
     (define (update! delta engine)
       (unless -physics-shape (set! -physics-shape (MakeRectangle -position -width -height #:log -log)))
-      (unless -collide-proc  (set! -collide-proc  (engine 'collide -position -width -height set-color!)))
+      (unless -collide-proc  (set! -collide-proc  (engine 'collide set-color! -width -height -position)))
       (-collide-proc delta)
       (-physics-shape 'update! delta engine kVelocity))
 
