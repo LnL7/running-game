@@ -13,9 +13,9 @@
         (-physics-shape #f)
         (-gravity-proc  #f)
         (-reset-proc    #f)
+        (-size          kSize)
         (-position      position)
-        (-velocity      kNullVelocity)
-        (-size          kSize))
+        (-velocity      (kNullVelocity 'copy)))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -40,8 +40,8 @@
 
     (define (update! delta engine)
       (unless -physics-shape  (set! -physics-shape (MakeRectangle -position kSize kSize #:log -log)))
-      (unless -reset-proc     (set! -reset-proc    (engine 'reset -velocity -position end-jumping)))
-      (unless -gravity-proc   (set! -gravity-proc  (engine 'gravity -velocity -position)))
+      (unless -reset-proc     (set! -reset-proc    (engine 'reset end-jumping -position -velocity)))
+      (unless -gravity-proc   (set! -gravity-proc  (engine 'gravity -position -velocity)))
       (-reset-proc delta)
       (-gravity-proc delta)
       (-physics-shape 'update! delta engine -velocity))

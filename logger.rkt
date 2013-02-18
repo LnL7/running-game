@@ -12,7 +12,7 @@
         ((warn)  warning)
         ((fatal) fatal)
         (else
-          (warning "method missing" msg kClass)))
+          (lambda args (warning "method missing" msg kClass))))
       args))
 
   (define (debug message sym . args)

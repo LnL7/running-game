@@ -34,6 +34,11 @@
     (define (render engine)
       (engine 'score dispatch))
 
+
+    ;; Private
+
+    (-log 'debug "initialized" kClass)
+
     dispatch))
 
 
