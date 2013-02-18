@@ -64,8 +64,8 @@
           (< (position 'x)         (+ (-player-position 'x) -player-size))
           (< (position 'y)         (+ (-player-position 'y) -player-size))
           (cond
-            ((> (-player-velocity 'vertical) kCollideSpeed)  (end-game))
-            ((> (-player-velocity 'horizontal) kBounceSpeed) (end-game))
+            ((> (-player-velocity 'vertical) kCollideSpeed)  (game-menu))
+            ((> (-player-velocity 'horizontal) kBounceSpeed) (game-menu))
             (else
               (color! "red")
               (if (< (position 'y) (-player-position 'y))
@@ -79,10 +79,10 @@
 
     ;; Private
 
-    (define (end-game)
+    (define (game-menu)
       (if -game
-        (-game 'end)
-        (-log 'warn "game missing" 'end-game kClass))
+        (-game 'menu)
+        (-log 'warn "game missing" 'game-menu kClass))
       dispatch)
 
     (define (move-player)
