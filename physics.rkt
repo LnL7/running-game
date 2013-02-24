@@ -1,5 +1,6 @@
 #lang racket/base
 (require "logger.rkt"
+         "level.rkt"
          "velocity.rkt"
          "update-engine.rkt"
          "collision-engine.rkt"
@@ -9,7 +10,8 @@
 
 
 (define (MakePhysics #:log [-log (MakeLogger)])
-  (let ((-update    (MakeUpdateEngine #:log -log))
+  (let ((-level     (MakeDefaultLevel #:log -log))
+        (-update    (MakeUpdateEngine #:log -log))
         (-collision (MakeCollisionEngine #:log -log)))
     (define (dispatch msg . args)
       (apply
@@ -29,8 +31,10 @@
         (apply -update 'rectangle delta args)))
 
     (define (gravity . args)
-      (lambda (delta)
-        (apply -update 'gravity delta args)))
+      (let ((friction         (-level 'friction))
+            (gravity-velocity (-level 'gravity)))
+        (lambda (delta)
+          (apply -update 'gravity delta friction gravity-velocity args))))
 
     (define (reset . args)
       (lambda (delta)

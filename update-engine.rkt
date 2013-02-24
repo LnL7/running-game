@@ -16,7 +16,6 @@
           (-log 'fatal "method missing" msg kClass)))
       args))
 
-  ;; (percentage shape-rectangle velocity -> self)
   (define (shape-rectangle delta rectangle velocity)
     (let ((pos (rectangle 'position))
           (vel (velocity 'copy)))
@@ -24,11 +23,10 @@
       (pos 'move! vel)
     dispatch))
 
-  ;; (percentage position velocity -> self)
-  (define (gravity delta position velocity)
+  (define (gravity delta friction gravity-velocity position velocity)
     (let ((vel     (velocity 'copy))
-          (gravity (kGravityVelocity 'copy)))
-      (velocity 'add! (vel 'scale! (/ delta kFriction)))
+          (gravity (gravity-velocity 'copy)))
+      (velocity 'add! (vel 'scale! (/ delta friction)))
       (velocity 'add! (gravity 'scale! delta))
       dispatch))
 
@@ -40,6 +38,4 @@
   dispatch)
 
 
-(define kClass           'UpdateEngine)
-(define kGravityVelocity (MakeVelocity 0 (* -0.94 4)))
-(define kFriction        -10)
+(define kClass 'UpdateEngine)

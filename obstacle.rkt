@@ -1,5 +1,6 @@
 #lang racket/base
 (require "logger.rkt"
+         "range.rkt"
          "shape.rkt"
          "helpers.rkt")
 (provide (all-from-out "shape.rkt")
@@ -9,20 +10,20 @@
 
 
 (define (MakeRandomObstacle offset #:log [-log (MakeLogger)])
-  (let* ((y      (+ (random kMaxY) kMinY))
-         (x      (+ (random kMaxX) (offset 'x) kMinX))
-         (width  (+ (random kMaxSize) kMinSize))
-         (height (+ (random kMaxSize) kMinSize))
-         (pos    (MakePosition x y #:log -log)))
-    (offset 'x! x)
-    (MakeObstacle pos width height #:log -log)))
+  (kXRange 'offset! (offset 'x))
+  (let ((width  (kSizeRange 'random))
+        (height (kSizeRange 'random))
+        (pos    (MakePosition (kXRange 'random) (kYRange 'random) #:log -log)))
+    (offset 'x! (pos 'x))
+    (MakeObstacle pos kVelocity width height #:log -log)))
 
 
-(define (MakeObstacle position width height #:log [-log (MakeLogger)])
+(define (MakeObstacle position velocity width height #:log [-log (MakeLogger)])
   (let ((-display-shape #f)
         (-physics-shape #f)
         (-collide-proc  #f)
         (-position      position)
+        (-velocity      velocity)
         (-width         width)
         (-height        height))
     (define (dispatch msg . args)
@@ -43,7 +44,7 @@
       (unless -physics-shape (set! -physics-shape (MakeRectangle -position -width -height #:log -log)))
       (unless -collide-proc  (set! -collide-proc  (engine 'collide set-color! -width -height -position)))
       (-collide-proc delta)
-      (-physics-shape 'update! delta engine kVelocity))
+      (-physics-shape 'update! delta engine -velocity))
 
     (define (get-position) -position)
 
@@ -61,12 +62,8 @@
 
 
 (define kClass    'Obstacle)
-(define kVelocity (MakeVelocity -10 0))
 (define kColor    "black")
-
-(define kMaxSize 200)
-(define kMinSize 50)
-(define kMaxX    800)
-(define kMaxY    300)
-(define kMinX    100)
-(define kMinY    0)
+(define kVelocity  (MakeVelocity -10 0))
+(define kSizeRange (MakeRange 50  200))
+(define kYRange    (MakeRange 0   300))
+(define kXRange    (MakeRange 100 700))
