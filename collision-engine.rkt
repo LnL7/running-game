@@ -7,91 +7,65 @@
 
 
 (define (MakeCollisionEngine #:log [-log (MakeLogger)])
-  (let ((-game            #f)
-        (-player-size     #f)
-        (-player-velocity #f)
-        (-player-position #f))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((game!)   set-game!)
-          ((player!) set-player!)
-          ((collide) obstacle-collide)
-          ((reset)   player-reset)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+  (define (dispatch msg . args)
+    (apply
+      (case msg
+        ((collide) obstacle-collide)
+        ((reset)   player-reset)
+        (else
+          (-log 'fatal "method missing" msg kClass)))
+      args))
 
-    ;; Properties
-
-    (define (set-game! game)
-      (set! -game game)
-      dispatch)
-
-    (define (set-player! velocity position size)
-      (set! -player-size     size)
-      (set! -player-velocity velocity)
-      (set! -player-position position)
-      dispatch)
+  ;; Properties
 
 
-    ;; (time-delta (-> player) position velocity -> dispatch)
-    (define (player-reset delta end-jumping position velocity)
-      (when (< (position 'x) kLeft)
-        (position 'x! kLeft)
-        (velocity 'horizontal! kBounceSpeed))
-      (when (> (position 'x) kRight)
-        (position 'x! kRight)
-        (velocity 'horizontal! (- kBounceSpeed)))
-      (when (< (position 'y) kBottom)
-        (end-jumping)
-        (position 'y! kBottom)
-        (velocity 'vertical! kBounceSpeed))
-      (when (> (position 'y) kTop)
-        (position 'y! kTop)
-        (velocity 'vertical! kNullSpeed))
-      dispatch)
+  ;; (time-delta (-> player) position velocity -> dispatch)
+  (define (player-reset delta end-jumping position velocity)
+    (when (< (position 'x) kLeft)
+      (position 'x! kLeft)
+      (velocity 'horizontal! kBounceSpeed))
+    (when (> (position 'x) kRight)
+      (position 'x! kRight)
+      (velocity 'horizontal! (- kBounceSpeed)))
+    (when (< (position 'y) kBottom)
+      (end-jumping)
+      (position 'y! kBottom)
+      (velocity 'vertical! kBounceSpeed))
+    (when (> (position 'y) kTop)
+      (position 'y! kTop)
+      (velocity 'vertical! kNullSpeed))
+    dispatch)
 
-    ;; (time-delta (color -> shape) width height position)
-    (define (obstacle-collide delta color! width height position)
+  ;; (time-delta game player (color -> shape) width height position)
+  (define (obstacle-collide delta game player color! width height position)
+    (let ((player-size     (player 'size))
+          (player-position (player 'position))
+          (player-velocity (player 'velocity)))
       (let --iter ()
         (and
-          -player-size
-          -player-velocity
-          -player-position
-          (< (-player-position 'x) (+ (position 'x) width))
-          (< (-player-position 'y) (+ (position 'y) height))
-          (< (position 'x)         (+ (-player-position 'x) -player-size))
-          (< (position 'y)         (+ (-player-position 'y) -player-size))
+          (< (player-position 'x) (+ (position 'x) width))
+          (< (player-position 'y) (+ (position 'y) height))
+          (< (position 'x)        (+ (player-position 'x) player-size))
+          (< (position 'y)        (+ (player-position 'y) player-size))
           (cond
-            ((> (-player-velocity 'vertical) kCollideSpeed)  (game-menu))
-            ((> (-player-velocity 'horizontal) kBounceSpeed) (game-menu))
+            ((> (player-velocity 'vertical) kCollideSpeed)  (game 'menu))
+            ((> (player-velocity 'horizontal) kBounceSpeed) (game 'menu))
             (else
               (color! "red")
-              (if (< (position 'y) (-player-position 'y))
-                (-player-velocity 'vertical! kBounceSpeed)
-                (-player-velocity 'vertical! (- kBounceSpeed)))
-              (-player-velocity 'horizontal! kNullSpeed)
-              (move-player)
-              (--iter))))
-        dispatch))
+              (if (< (position 'y) (player-position 'y))
+                (player-velocity 'vertical! kBounceSpeed)
+                (player-velocity 'vertical! (- kBounceSpeed)))
+              (player-velocity 'horizontal! kNullSpeed)
+              (player-position 'move! player-velocity)
+              (--iter)))))
+      dispatch))
 
 
-    ;; Private
+  ;; Private
 
-    (define (game-menu)
-      (if -game
-        (-game 'menu)
-        (-log 'warn "game missing" 'game-menu kClass))
-      dispatch)
+  (-log 'debug "initialized" kClass)
 
-    (define (move-player)
-      (-player-position 'move! -player-velocity)
-      dispatch)
-
-    (-log 'debug "initialized" kClass)
-
-    dispatch))
+  dispatch)
 
 
 (define kClass        'CollisionEngine)

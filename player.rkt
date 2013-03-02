@@ -19,7 +19,11 @@
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((physics) physics)
+          ((size)     get-size)
+          ((position) get-position)
+          ((velocity) get-velocity)
+          ((jumping?) get-jumping?)
+          ((jumping!) set-jumping!)
           ((input)   input)
           ((render)  render)
           ((update!) update!)
@@ -27,12 +31,18 @@
             (-log 'fatal "method missing" msg kClass)))
         args))
 
-    (define (physics engine)
-      (engine 'player! -velocity -position -size))
+    ;; Properties
+
+    (define (get-size)          -size)
+    (define (get-position)      -position)
+    (define (get-velocity)      -velocity)
+    (define (get-jumping?)      -is-jumping)
+    (define (set-jumping! jump) (set! -is-jumping jump))
+
 
     (define (input engine)
       (engine 'strafe -velocity)
-      (engine 'jump get-is-jumping? start-jumping -velocity))
+      (engine 'jump get-jumping? (lambda () (set-jumping! #t)) -velocity))
 
     (define (render engine)
       (unless -display-shape (set! -display-shape (MakeImage -position kSize kSize kPath #:log -log)))

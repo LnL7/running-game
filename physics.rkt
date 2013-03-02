@@ -10,7 +10,9 @@
 
 
 (define (MakePhysics #:log [-log (MakeLogger)])
-  (let ((-level     (MakeDefaultLevel #:log -log))
+  (let ((-game      #f)
+        (-player    #f)
+        (-level     (MakeDefaultLevel #:log -log))
         (-update    (MakeUpdateEngine #:log -log))
         (-collision (MakeCollisionEngine #:log -log)))
     (define (dispatch msg . args)
@@ -25,6 +27,10 @@
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
+
+    (define (set-game! game)     (set! -game game))
+    (define (set-player! player) (set! -player player))
+
 
     (define (shape-rectangle . args)
       (lambda (delta)
@@ -42,13 +48,7 @@
 
     (define (collide . args)
       (lambda (delta)
-        (apply -collision 'collide delta args)))
-
-    (define (set-game! . args)
-      (apply -collision 'game! args))
-
-    (define (set-player! . args)
-      (apply -collision 'player! args))
+        (apply -collision 'collide delta -game -player args)))
 
 
     ;; Private

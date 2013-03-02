@@ -49,10 +49,11 @@
         (let ((player    (-world 'player))
               (obstacles (-world 'obstacles)))
           (-score 'end)
-          (player 'physics -physics)
-          (player 'input -input)
-          (obstacles 'fill!)
-          (obstacles 'score! -score)))
+          (-physics 'player! player)
+          (-input 'strafe player)
+          (-input 'jump player)
+          (obstacles 'score! -score)
+          (obstacles 'fill!)))
       dispatch)
 
 
