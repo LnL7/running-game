@@ -14,5 +14,6 @@ tags:
 	ctags --langmap=scheme:.rkt -R .
 
 clean:
+	rm -f resources/*.txt
 	find . -name "*~" -exec rm -f {} \;
 	find . -name compiled -exec rm -rf {} \;
