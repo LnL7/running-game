@@ -43,7 +43,7 @@
 
     (define (update! delta engine)
       (unless -physics-shape (set! -physics-shape (MakeRectangle -position -width -height #:log -log)))
-      (unless -collide-proc  (set! -collide-proc  (engine 'collide set-color! -width -height -position)))
+      (unless -collide-proc  (set! -collide-proc  (engine 'collide fall! set-color! -width -height -position)))
       (-collide-proc delta)
       (-physics-shape 'update! delta engine -velocity))
 
@@ -51,9 +51,11 @@
 
 
     ;; Private
-
     (define (set-color! color)
       (-display-shape 'color! color))
+
+    (define (fall!)
+      (-velocity 'vertical! (kSpeedRange 'random)))
 
 
     ; (-log 'debug "initialized" kClass -position -width -height)
