@@ -12,13 +12,14 @@
 (define (MakePhysics #:log [-log (MakeLogger)])
   (let ((-game      #f)
         (-player    #f)
-        (-level     (MakeDefaultLevel #:log -log))
+        (-level     #f)
         (-update    (MakeUpdateEngine #:log -log))
         (-collision (MakeCollisionEngine #:log -log)))
     (define (dispatch msg . args)
       (apply
         (case msg
           ((game!)     set-game!)
+          ((level!)    set-level!)
           ((player!)   set-player!)
           ((rectangle) shape-rectangle)
           ((gravity)   gravity)
@@ -29,6 +30,7 @@
         args))
 
     (define (set-game! game)     (set! -game game))
+    (define (set-level! level)   (set! -level level))
     (define (set-player! player) (set! -player player))
 
 

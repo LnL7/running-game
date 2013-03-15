@@ -3,7 +3,7 @@
          "logger.rkt"
          "menu.rkt"
          "world.rkt"
-         "score.rkt"
+         "level.rkt"
          "physics.rkt"
          "input.rkt"
          "display.rkt"
@@ -16,10 +16,12 @@
   (let ((-state     #f)
         (-menu      #f)
         (-world     #f)
-        (-score     (MakeScore #:log -log))
+        (-level     kDefaultLevelIndex)
         (-display   (MakeDisplay #:log -log))
         (-physics   (MakePhysics #:log -log))
-        (-input     (MakeInput #:log -log)))
+        (-input     (MakeInput #:log -log))
+        (-levels    (vector
+                      (MakeDefaultLevel #:log -log))))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -36,9 +38,11 @@
 
     (define (menu)
       (unless (eq? -state 'menu)
-        (set! -state 'menu)
-        (set! -world #f)
-        (set! -menu  (MakeMenu -score #:log -log)))
+        (let* ((level (vector-ref -levels -level))
+               (score (level 'score)))
+          (set! -state 'menu)
+          (set! -world #f)
+          (set! -menu  (MakeMenu score #:log -log))))
       dispatch)
 
     (define (world)
@@ -46,13 +50,16 @@
         (set! -state 'world)
         (set! -menu #f)
         (set! -world (MakeWorld #:log -log))
-        (let ((player    (-world 'player))
-              (obstacles (-world 'obstacles)))
-          (-score 'end)
+        (let* ((level     (vector-ref -levels -level))
+               (score     (level 'score))
+               (player    (-world 'player))
+               (obstacles (-world 'obstacles)))
+          (score 'end)
+          (-physics 'level! level)
           (-physics 'player! player)
           (-input 'strafe player)
           (-input 'jump player)
-          (obstacles 'score! -score)
+          (obstacles 'score! score)
           (obstacles 'fill!)))
       dispatch)
 
@@ -88,4 +95,5 @@
 ;; (time-delta -> percentage)
 (define (scale-helper delta) (/ delta 100))
 
-(define kClass 'Game)
+(define kClass             'Game)
+(define kDefaultLevelIndex 0)
