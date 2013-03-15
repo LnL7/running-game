@@ -43,7 +43,8 @@
     (let ((player-size     (player 'size))
           (player-position (player 'position))
           (player-velocity (player 'velocity))
-          (bounce          (kBounceRange 'random)))
+          (bounce          (kBounceRange 'random))
+          (max-bounce      (kBounceRange 'to)))
       (let --iter ()
         (and
           (< (player-position 'x) (+ (position 'x) width))
@@ -52,7 +53,7 @@
           (< (position 'y)        (+ (player-position 'y) player-size))
           (cond
             ((> (player-velocity 'vertical) kCollideSpeed) (game 'menu))
-            ((> (player-velocity 'horizontal) bounce)      (game 'menu))
+            ((> (player-velocity 'horizontal) max-bounce)  (game 'menu))
             (else
               (fall!)
               (color! "red")
