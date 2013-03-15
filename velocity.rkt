@@ -47,9 +47,7 @@
 
 
     ;; Private
-
-    (-log 'debug "initialized" kClass)
-
+    ; (-log 'debug "initialized" kClass)
     dispatch))
 
 

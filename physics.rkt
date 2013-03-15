@@ -46,17 +46,15 @@
 
     (define (reset . args)
       (lambda (delta)
-        (apply -collision 'reset delta args)))
+        (apply -collision 'reset delta (-level 'player-bounce) args)))
 
     (define (collide . args)
       (lambda (delta)
-        (apply -collision 'collide delta -game -player args)))
+        (apply -collision 'collide delta (-level 'player-bounce) -game -player args)))
 
 
     ;; Private
-
     (-log 'debug "initialized" kClass)
-
     dispatch))
 
 

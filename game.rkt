@@ -11,17 +11,17 @@
 (provide MakeGame)
 
 
-
 (define (MakeGame #:log [-log (MakeLogger)])
-  (let ((-state     #f)
-        (-menu      #f)
-        (-world     #f)
-        (-level     kDefaultLevelIndex)
-        (-display   (MakeDisplay #:log -log))
-        (-physics   (MakePhysics #:log -log))
-        (-input     (MakeInput #:log -log))
-        (-levels    (vector
-                      (MakeDefaultLevel #:log -log))))
+  (let ((-state   #f)
+        (-menu    #f)
+        (-world   #f)
+        (-level   kDefaultLevelIndex)
+        (-display (MakeDisplay #:log -log))
+        (-physics (MakePhysics #:log -log))
+        (-input   (MakeInput #:log -log))
+        (-levels  (vector
+                    (MakeDefaultLevel #:log -log)
+                    (MakeSpeedyLevel #:log -log))))
     (define (dispatch msg . args)
       (apply
         (case msg
@@ -40,6 +40,7 @@
       (unless (eq? -state 'menu)
         (let* ((level (vector-ref -levels -level))
                (score (level 'score)))
+          (next-level!)
           (set! -state 'menu)
           (set! -world #f)
           (set! -menu  (MakeMenu score #:log -log))))
@@ -57,15 +58,15 @@
           (score 'end)
           (-physics 'level! level)
           (-physics 'player! player)
+          (-input 'level! level)
           (-input 'strafe player)
           (-input 'jump player)
-          (obstacles 'score! score)
+          (obstacles 'level! level)
           (obstacles 'fill!)))
       dispatch)
 
 
     ;; Private
-
     (define (game-loop delta)
       (let ((percentage (scale-helper delta)))
         (case -state
@@ -81,14 +82,16 @@
     (define (menu-loop delta)
       (-menu 'render -display))
 
+    (define (next-level!)
+      (set! -level (modulo
+                     (+ -level 1)
+                     (vector-length -levels))))
 
     (-physics 'game! dispatch)
     (-input 'game! dispatch)
     (-input 'world)
-    (menu)
-
+    (world)
     (-log 'debug "initialized" kClass)
-
     dispatch))
 
 

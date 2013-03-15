@@ -6,13 +6,14 @@
 (provide MakeInput)
 
 
-
 (define (MakeInput #:log [-log (MakeLogger)])
-  (let ((-game #f))
+  (let ((-game  #f)
+        (-level #f))
     (define (dispatch msg . args)
       (apply
         (case msg
           ((game!)  set-game!)
+          ((level!) set-level!)
           ((world)  world-start)
           ((jump)   player-jump)
           ((strafe) player-strafe)
@@ -21,9 +22,8 @@
         args))
 
     ;; Properties
-
-    (define (set-game! game) (set! -game game))
-
+    (define (set-game! game)   (set! -game game))
+    (define (set-level! level) (set! -level level))
 
     (define (world-start)
       (on-key! #\return (lambda () (when -game (-game 'world)))))
@@ -32,29 +32,23 @@
       (let ((vel (player 'velocity)))
         (define (jump) (unless (player 'jumping?)
                          (player 'jumping! #t)
-                         (vel 'add! kJumpVelocity)))
+                         (vel 'add! (-level 'player-jump))))
         (on-key! 'up jump)
         (on-key! #\w jump)))
 
     (define (player-strafe player)
-      (let ((vel (player 'velocity)))
-        (define (left)  (vel 'horizontal! kLeftStrafeSpeed))
-        (define (right) (vel 'horizontal! kRightStrafeSpeed))
+      (let ((vel    (player 'velocity))
+            (strafe (-level 'player-strafe)))
+        (define (left)  (vel 'horizontal! (- strafe)))
+        (define (right) (vel 'horizontal! (+ strafe)))
         (on-key! 'left left)
         (on-key! #\a left)
         (on-key! 'right right)
         (on-key! #\d right)))
 
-
     ;; Private
-
     (-log 'debug "initialized" kClass)
-
     dispatch))
 
 
-(define kClass               'Input)
-(define kJumpVelocity        (MakeVelocity 0 100))
-(define kNullSpeed           0)
-(define kRightStrafeSpeed    20)
-(define kLeftStrafeSpeed     -20)
+(define kClass 'Input)

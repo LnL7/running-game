@@ -8,13 +8,12 @@
          MakeRandomObstacle)
 
 
-
-(define (MakeRandomObstacle offset #:log [-log (MakeLogger)])
-  (kXRange 'offset! (offset 'x))
-  (let ((width  (kSizeRange 'random))
-        (height (kSizeRange 'random))
-        (vel    (MakeVelocity (kSpeedRange 'random) 0 #:log -log))
-        (pos    (MakePosition (kXRange 'random) (kYRange 'random) #:log -log)))
+(define (MakeRandomObstacle offset speed size x y #:log [-log (MakeLogger)])
+  (x 'offset! (offset 'x))
+  (let ((width  (size 'random))
+        (height (size 'random))
+        (vel    (MakeVelocity (speed 'random) 0 #:log -log))
+        (pos    (MakePosition (x 'random) (y 'random) #:log -log)))
     (offset 'x! (pos 'x))
     (MakeObstacle pos vel width height #:log -log)))
 
@@ -49,24 +48,16 @@
 
     (define (get-position) -position)
 
-
     ;; Private
     (define (set-color! color)
       (-display-shape 'color! color))
 
     (define (fall!)
-      (-velocity 'vertical! (kSpeedRange 'random)))
-
+      (-velocity 'vertical! (-velocity 'horizontal)))
 
     ; (-log 'debug "initialized" kClass -position -width -height)
-
     dispatch))
 
 
-
-(define kClass      'Obstacle)
-(define kColor      "Black")
-(define kSpeedRange (MakeRange -15 -5))
-(define kSizeRange  (MakeRange 50  200))
-(define kYRange     (MakeRange 0   300))
-(define kXRange     (MakeRange 100 700))
+(define kClass 'Obstacle)
+(define kColor "Black")

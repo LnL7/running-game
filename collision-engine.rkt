@@ -21,8 +21,8 @@
 
 
   ;; (time-delta (-> player) position velocity -> dispatch)
-  (define (player-reset delta end-jumping position velocity)
-    (let ((bounce (kBounceRange 'random)))
+  (define (player-reset delta bounce-range end-jumping position velocity)
+    (let ((bounce (bounce-range 'random)))
       (when (< (position 'x) kLeft)
         (position 'x! kLeft)
         (velocity 'horizontal! bounce))
@@ -39,12 +39,12 @@
       dispatch))
 
   ;; (time-delta game player (color -> shape) width height position)
-  (define (obstacle-collide delta game player fall! color! width height position)
+  (define (obstacle-collide delta bounce-range game player fall! color! width height position)
     (let ((player-size     (player 'size))
           (player-position (player 'position))
           (player-velocity (player 'velocity))
-          (bounce          (kBounceRange 'random))
-          (max-bounce      (kBounceRange 'to)))
+          (bounce          (bounce-range 'random))
+          (max-bounce      (bounce-range 'to)))
       (let --iter ()
         (and
           (< (player-position 'x) (+ (position 'x) width))
@@ -67,9 +67,7 @@
 
 
   ;; Private
-
   (-log 'debug "initialized" kClass)
-
   dispatch)
 
 
@@ -78,7 +76,5 @@
 (define kRight        750)
 (define kBottom       0)
 (define kTop          500)
-(define kBounceSpeed  20)
-(define kBounceRange  (MakeRange 10 30))
 (define kNullSpeed    0)
 (define kCollideSpeed 8)

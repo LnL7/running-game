@@ -11,19 +11,21 @@
 
 
 (define (MakeObstacleCollection #:log [-log (MakeLogger)])
-  (let ((-score      #f)
-        (-offset     (MakePosition kGenerateOffset 0))
+  (let ((-level      #f)
+        (-offset     kNullPosition)
         (-collection (MakeQueue kSize #:log -log)))
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((score!)  set-score!)
+          ((level!)  set-level!)
           ((render)  render)
           ((update!) update!)
           ((fill!)   fill-collection!)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
+
+    (define (set-level! level) (set! -level level))
 
     (define (render engine)
       (-collection 'each (lambda (obstacle)
@@ -35,14 +37,15 @@
                            (cleanup obstacle))))
 
     (define (fill-collection!)
-      (if (-collection 'full?)
-        (-offset 'x! kGenerateOffset)
-        (begin
-          (-collection 'enqueue! (MakeRandomObstacle -offset #:log -log))
-          (fill-collection!))))
-
-    (define (set-score! score)
-      (set! -score score))
+      (-offset 'x! (-level 'obstacle-generate-offset))
+      (let ((speed (-level 'obstacle-speed))
+            (size  (-level 'obstacle-size))
+            (x     (-level 'obstacle-x))
+            (y     (-level 'obstacle-y)))
+        (let --iter ()
+          (unless (-collection 'full?)
+            (-collection 'enqueue! (MakeRandomObstacle -offset speed size x y #:log -log))
+            (--iter)))))
 
 
     ;; Private
@@ -50,18 +53,17 @@
     (define (cleanup obstacle)
       (when (and
               (eq? (-collection 'peek) obstacle)
-              (< (chain obstacle 'position 'x) kCleanupOffset))
+              (< (chain obstacle 'position 'x) (-level 'obstacle-cleanup-offset)))
         (-log 'debug "removing an" 'Obstacle)
-        (when -score (-score 'add))
+        (when -level ((-level 'score) 'add))
         (-collection 'serve!)
         (fill-collection!)))
 
+    ;; Private
     (-log 'debug "initialized" kClass)
-
     dispatch))
 
 
-(define kClass          'ObstacleCollection)
-(define kSize           5)
-(define kCleanupOffset  -300)
-(define kGenerateOffset 800)
+(define kClass        'ObstacleCollection)
+(define kSize         5)
+(define kNullPosition (MakePosition 0 0))

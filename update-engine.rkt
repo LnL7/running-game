@@ -32,9 +32,7 @@
 
 
   ;; Private
-
   (-log 'debug "initialized" kClass)
-
   dispatch)
 
 
