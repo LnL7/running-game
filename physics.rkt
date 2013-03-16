@@ -33,16 +33,16 @@
     (define (set-level! level)   (set! -level level))
     (define (set-player! player) (set! -player player))
 
-
     (define (shape-rectangle . args)
       (lambda (delta)
         (apply -update 'rectangle delta args)))
 
-    (define (gravity . args)
-      (let ((friction         (-level 'friction))
-            (gravity-velocity (-level 'gravity)))
+    (define (gravity get-mass . args)
+      (let ((mass     (-level get-mass))
+            (friction (-level 'friction))
+            (gravity  (-level 'gravity)))
         (lambda (delta)
-          (apply -update 'gravity delta friction gravity-velocity args))))
+          (apply -update 'gravity delta mass friction gravity args))))
 
     (define (reset . args)
       (lambda (delta)

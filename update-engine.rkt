@@ -23,11 +23,11 @@
       (pos 'move! vel)
     dispatch))
 
-  (define (gravity delta friction gravity-velocity position velocity)
+  (define (gravity delta mass friction gravity position velocity)
     (let ((vel     (velocity 'copy))
-          (gravity (gravity-velocity 'copy)))
+          (gravity (gravity 'copy)))
       (velocity 'add! (vel 'scale! (/ delta friction)))
-      (velocity 'add! (gravity 'scale! delta))
+      (velocity 'add! (gravity 'scale! (* mass delta)))
       dispatch))
 
 

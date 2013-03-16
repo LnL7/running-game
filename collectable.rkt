@@ -17,7 +17,9 @@
 
 (define (MakeCollectable position velocity size #:log [-log (MakeLogger)])
   (let ((-display-shape #f)
-        (-update-shape  #f)
+        (-physics-shape #f)
+        (-gravity-proc  #f)
+        (-collide-proc  #f)
         (-size          size)
         (-velocity      velocity)
         (-position      position))
@@ -37,14 +39,27 @@
       (unless -display-shape (set! -display-shape (MakeEllipse -position -size -size kColor #:log -log)))
       (-display-shape 'render engine))
 
-    (define (update! delta engine)
-      (unless -update-shape (set! -update-shape (MakeRectangle -position -size -size #:log -log)))
-      (-update-shape 'update! delta engine -velocity))
+    (define (update! score! delta engine)
+      (unless -physics-shape (set! -physics-shape (MakeRectangle -position -size -size #:log -log)))
+      (unless -gravity-proc  (set! -gravity-proc  (engine 'gravity 'collectable-mass -position -velocity)))
+      (unless -collide-proc  (set! -collide-proc  (engine 'collide (collide score!) -size -size -position)))
+      (-gravity-proc delta)
+      (-collide-proc delta)
+      (-physics-shape 'update! delta engine -velocity))
 
     ;; Private
-    dispatch))
+    (define (collide score!)
+      (lambda (menu!) ;; soft and hard collisions
+        (score!)
+        (-display-shape 'color! kCollideColor)
+        (-log 'debug "score!" kClass)
+        #f)) ;; collision done
+
+; (-log 'debug "initialized" kClass)
+dispatch))
 
 
 (define kClass 'Collectable)
 (define kSize  10)
 (define kColor "blue")
+(define kCollideColor "gray")

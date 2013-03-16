@@ -39,34 +39,34 @@
       dispatch))
 
   ;; (time-delta game player (color -> shape) width height position)
-  (define (obstacle-collide delta bounce-range game player fall! color! width height position)
+  (define (obstacle-collide delta bounce-range game player collide! width height position)
+    (define (menu!) (game 'menu) #f)
     (let ((player-size     (player 'size))
           (player-position (player 'position))
           (player-velocity (player 'velocity))
           (bounce          (bounce-range 'random))
           (max-bounce      (bounce-range 'to)))
       (let --iter ()
-        (and
-          (< (player-position 'x) (+ (position 'x) width))
-          (< (player-position 'y) (+ (position 'y) height))
-          (< (position 'x)        (+ (player-position 'x) player-size))
-          (< (position 'y)        (+ (player-position 'y) player-size))
+        (when (collision? player-size player-position width height position)
           (cond
-            ((> (player-velocity 'vertical) kCollideSpeed) (game 'menu))
-            ((> (player-velocity 'horizontal) max-bounce)  (game 'menu))
-            (else
-              (fall!)
-              (color! "red")
-              (if (< (position 'y) (player-position 'y))
-                (player-velocity 'vertical! bounce)
-                (player-velocity 'vertical! (- bounce)))
-              (player-velocity 'horizontal! kNullSpeed)
-              (player-position 'move! player-velocity)
-              (--iter)))))
-      dispatch))
-
+            ((> (player-velocity 'vertical) kCollideSpeed) (collide! menu!)) ;; hard collision
+            ((> (player-velocity 'horizontal) max-bounce)  (collide! menu!)) ;; hard collision
+            ((collide! #f) ;; soft collision
+             (if (< (position 'y) (player-position 'y))
+               (player-velocity 'vertical! bounce)
+               (player-velocity 'vertical! (- bounce)))
+             (player-velocity 'horizontal! kNullSpeed)
+             (player-position 'move! player-velocity)
+             (--iter)))))))
 
   ;; Private
+  (define (collision? player-size player-position width height position)
+    (and
+      (< (player-position 'x) (+ (position 'x) width))
+      (< (player-position 'y) (+ (position 'y) height))
+      (< (position 'x)        (+ (player-position 'x) player-size))
+      (< (position 'y)        (+ (player-position 'y) player-size))))
+
   (-log 'debug "initialized" kClass)
   dispatch)
 

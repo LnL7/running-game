@@ -41,22 +41,25 @@
 
     (define (update! delta engine)
       (unless -physics-shape (set! -physics-shape (MakeRectangle -position -width -height #:log -log)))
-      (unless -collide-proc  (set! -collide-proc  (engine 'collide fall! set-color! -width -height -position)))
+      (unless -collide-proc  (set! -collide-proc  (engine 'collide collide! -width -height -position)))
       (-collide-proc delta)
       (-physics-shape 'update! delta engine -velocity))
 
     (define (get-position) -position)
 
     ;; Private
-    (define (set-color! color)
-      (-display-shape 'color! color))
-
-    (define (fall!)
-      (-velocity 'vertical! (-velocity 'horizontal)))
+    (define (collide! menu!)
+      (cond
+        (menu! (menu!)) ;; exit to menu on hard collision
+        (else ;; soft collision
+          (-velocity 'vertical! (-velocity 'horizontal)) ;; Start falling
+          (-display-shape 'color! kCollideColor)
+          #t))) ;; check collisions again
 
     ; (-log 'debug "initialized" kClass -position -width -height)
     dispatch))
 
 
-(define kClass 'Obstacle)
-(define kColor "Black")
+(define kClass        'Obstacle)
+(define kColor        "black")
+(define kCollideColor "gray")

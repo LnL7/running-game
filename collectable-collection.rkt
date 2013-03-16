@@ -30,7 +30,7 @@
 
     (define (update! delta engine)
       (-collection 'each (lambda (collectable)
-                           (collectable 'update! delta engine)
+                           (collectable 'update! score! delta engine)
                            (cleanup collectable))))
 
     (define (fill-collection!)
@@ -51,6 +51,9 @@
         (-log 'debug "removing a" 'Collectable)
         (-collection 'serve!)
         (fill-collection!)))
+
+    (define (score!)
+      ((-level 'score) 'add))
 
     dispatch))
 

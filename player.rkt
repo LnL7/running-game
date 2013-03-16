@@ -6,7 +6,6 @@
          MakePlayer)
 
 
-
 (define (MakePlayer position #:log [-log (MakeLogger)])
   (let ((-is-jumping    #t)
         (-display-shape #f)
@@ -31,14 +30,11 @@
             (-log 'fatal "method missing" msg kClass)))
         args))
 
-    ;; Properties
-
     (define (get-size)          -size)
     (define (get-position)      -position)
     (define (get-velocity)      -velocity)
     (define (get-jumping?)      -is-jumping)
     (define (set-jumping! jump) (set! -is-jumping jump))
-
 
     (define (input engine)
       (engine 'strafe -velocity)
@@ -51,20 +47,17 @@
     (define (update! delta engine)
       (unless -physics-shape  (set! -physics-shape (MakeRectangle -position kSize kSize #:log -log)))
       (unless -reset-proc     (set! -reset-proc    (engine 'reset end-jumping -position -velocity)))
-      (unless -gravity-proc   (set! -gravity-proc  (engine 'gravity -position -velocity)))
+      (unless -gravity-proc   (set! -gravity-proc  (engine 'gravity 'player-mass -position -velocity)))
       (-reset-proc delta)
       (-gravity-proc delta)
       (-physics-shape 'update! delta engine -velocity))
 
-
     ;; Private
-
     (define (get-is-jumping?) -is-jumping)
     (define (end-jumping) (set! -is-jumping #f))
     (define (start-jumping) (set! -is-jumping #t))
 
     (-log 'debug "initialized" kClass)
-
     dispatch))
 
 
