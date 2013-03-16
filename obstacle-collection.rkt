@@ -9,7 +9,6 @@
          (rename-out [kSize kObstacleCollectionSize]))
 
 
-
 (define (MakeObstacleCollection #:log [-log (MakeLogger)])
   (let ((-level      #f)
         (-offset     kNullPosition)
@@ -49,7 +48,6 @@
 
 
     ;; Private
-
     (define (cleanup obstacle)
       (when (and
               (eq? (-collection 'peek) obstacle)

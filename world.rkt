@@ -2,44 +2,45 @@
 (require "helpers.rkt"
          "logger.rkt"
          "player.rkt"
-         "obstacle-collection.rkt")
+         "obstacle-collection.rkt"
+         "collectable-collection.rkt")
 (provide MakeWorld)
 
 
-
 (define (MakeWorld #:log [-log (MakeLogger)])
-  (let ((-player    (MakePlayer (kPlayerPosition 'copy) #:log -log))
-        (-obstacles (MakeObstacleCollection #:log -log)))
+  (let ((-player       (MakePlayer (kPlayerPosition 'copy) #:log -log))
+        (-obstacles    (MakeObstacleCollection #:log -log))
+        (-collectables (MakeCollectableCollection #:log -log)))
     (define (dispatch msg . args)
       (apply
         (case msg
-          ((player)    get-player)
-          ((obstacles) get-obstacles)
-          ((render)    render)
-          ((update!)   update!)
+          ((player)       get-player)
+          ((obstacles)    get-obstacles)
+          ((collectables) get-collectables)
+          ((render)       render)
+          ((update!)      update!)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
 
     ;; Properties
-
-    (define (get-player)    -player)
-    (define (get-obstacles) -obstacles)
-
+    (define (get-player)       -player)
+    (define (get-obstacles)    -obstacles)
+    (define (get-collectables) -collectables)
 
     (define (render . args)
-      (apply -player 'render args)
-      (apply -obstacles 'render args)
-      dispatch)
+      (let ((msg 'render))
+        (apply -player msg args)
+        (apply -obstacles msg args)
+        (apply -collectables msg args)))
 
     (define (update! . args)
-      (apply -player 'update! args)
-      (apply -obstacles 'update! args)
-      dispatch)
-
+      (let ((msg 'update!))
+        (apply -player msg args)
+        (apply -obstacles msg args)
+        (apply -collectables msg args)))
 
     ;; Private
-
     dispatch))
 
 

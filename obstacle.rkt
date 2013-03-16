@@ -1,6 +1,5 @@
 #lang racket/base
 (require "logger.rkt"
-         "range.rkt"
          "shape.rkt"
          "helpers.rkt")
 (provide (all-from-out "shape.rkt")
