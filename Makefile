@@ -1,8 +1,8 @@
 .PHONY: run test tags clean
 
 build:
-	raco make test/game-start.rkt
-	raco exe -o bin/start test/game-start.rkt
+	raco make run.rkt
+	raco exe -o bin/run run.rkt
 
 run:
 	racket test/game-start.rkt
