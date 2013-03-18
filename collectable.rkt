@@ -59,7 +59,7 @@
 dispatch))
 
 
-(define kClass 'Collectable)
-(define kSize  10)
-(define kColor "blue")
-(define kCollideColor "gray")
+(define kClass        'Collectable)
+(define kSize         10)
+(define kColor        "yellow")
+(define kCollideColor "red")

@@ -17,6 +17,7 @@
           ((world)  world-start)
           ((jump)   player-jump)
           ((strafe) player-strafe)
+          ((slide)  player-slide)
           (else
             (-log 'fatal "method missing" msg kClass)))
         args))
@@ -31,6 +32,7 @@
     (define (player-jump player)
       (let ((vel (player 'velocity)))
         (define (jump) (unless (player 'jumping?)
+                         (player 'bounce! #t)
                          (player 'jumping! #t)
                          (vel 'add! (-level 'player-jump))))
         (on-key! 'up jump)
@@ -45,6 +47,11 @@
         (on-key! #\a left)
         (on-key! 'right right)
         (on-key! #\d right)))
+
+    (define (player-slide player)
+      (define (slide)  (player 'bounce! #f))
+      (on-key! 'down slide)
+      (on-key! #\s slide))
 
     ;; Private
     (-log 'debug "initialized" kClass)

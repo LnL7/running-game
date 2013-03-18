@@ -62,6 +62,7 @@
           (-input 'level! level)
           (-input 'strafe player)
           (-input 'jump player)
+          (-input 'slide player)
           (obstacles 'level! level)
           (obstacles 'fill!)
           (collectables 'level! level)
