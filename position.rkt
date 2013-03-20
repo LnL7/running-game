@@ -15,7 +15,6 @@
         ((distance) (apply calculate-distance args))
         ((copy)     (apply copy-position args))
         ((move!)    (apply move-velocity! args))
-        ((render)   (apply render args))
         (else
           (-log 'fatal "method missing" msg dispatch))))
     (define dispatch Position)
@@ -37,9 +36,6 @@
       (set-x! (+ (vel 'horizontal) -x))
       (set-y! (+ (vel 'vertical)   -y))
       dispatch)
-
-    (define (render engine)
-      (engine 'position dispatch))
 
     ;; Private
     ; (-log 'debug "initialized" dispatch)

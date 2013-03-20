@@ -6,8 +6,10 @@
 
 
 (define (MakeMenu -score #:log [-log (MakeLogger)])
-  (let ((-message-proc #f)
-        (-score-proc   #f))
+  (let ((-score-message-proc #f)
+        (-high-message-proc  #f)
+        (-score-proc         #f)
+        (-high-proc          #f))
     (define (Menu msg . args)
       (case msg
         ((render) (apply render args))
@@ -16,10 +18,14 @@
     (define dispatch Menu)
 
     (define (render engine)
-      (unless -message-proc (set! -message-proc (engine 'text kMessage kMessagePosition kColor)))
-      (unless -score-proc   (set! -score-proc   (engine 'text (score-helper -score) kScorePosition kColor)))
-      (-message-proc)
+      (unless -score-message-proc (set! -score-message-proc (engine 'text kScoreMessage kScoreMessagePosition kColor)))
+      (unless -high-message-proc  (set! -high-message-proc  (engine 'text kHighMessage kHighMessgePosition kColor)))
+      (unless -score-proc         (set! -score-proc   (engine 'text (number->string (-score 'current)) kScorePosition kColor)))
+      (unless -high-proc          (set! -high-proc    (engine 'text (number->string (-score 'highest)) kHighPosition kColor)))
+      (-score-message-proc)
+      (-high-message-proc)
       (-score-proc)
+      (-high-proc)
       dispatch)
 
     ;; Private
@@ -31,7 +37,10 @@
   (number->string (score 'current)))
 
 
-(define kMessagePosition (MakePosition 250 400))
-(define kScorePosition   (MakePosition 400 300))
-(define kMessage         "Game Over!")
-(define kColor           "black")
+(define kScoreMessagePosition (MakePosition 100 400))
+(define kHighMessgePosition   (MakePosition 100 200))
+(define kScorePosition        (MakePosition 400 400))
+(define kHighPosition         (MakePosition 400 200))
+(define kScoreMessage         "Score:")
+(define kHighMessage          "Highest:")
+(define kColor                "black")

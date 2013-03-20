@@ -11,10 +11,10 @@
   (let ((vel (MakeVelocity 0 (speed 'random) #:log -log))
         (pos (MakePosition (x 'random) (y 'random) #:log -log)))
     (offset 'y! (pos 'y))
-    (MakeCollectable pos vel kSize #:log -log)))
+    (MakeCollectable pos vel #:log -log)))
 
 
-(define (MakeCollectable -position -velocity -size #:log [-log (MakeLogger)])
+(define (MakeCollectable -position -velocity #:log [-log (MakeLogger)])
   (let ((-animation     0)
         (-display-shape #f)
         (-physics-shape #f)
@@ -31,13 +31,13 @@
     (define dispatch Collectable)
 
     (define (render engine)
-      (unless -display-shape (set! -display-shape (MakeImage -position -size -size (path-helper 1) #:log -log)))
+      (unless -display-shape (set! -display-shape (MakeImage -position kSize kSize (path-helper 1) #:log -log)))
       (-display-shape 'render engine))
 
     (define (update! score! delta engine)
-      (unless -physics-shape (set! -physics-shape (MakeRectangle -position -size -size #:log -log)))
+      (unless -physics-shape (set! -physics-shape (MakeRectangle -position kSize kSize #:log -log)))
       (unless -gravity-proc  (set! -gravity-proc  (engine 'gravity 'collectable-mass -position -velocity)))
-      (unless -collide-proc  (set! -collide-proc  (engine 'collide (collide score!) -size -size -position)))
+      (unless -collide-proc  (set! -collide-proc  (engine 'collide (collide score!) kSize kSize -position)))
       (unless -animate-proc  (set! -animate-proc  (animate)))
       (-gravity-proc delta)
       (-collide-proc delta)

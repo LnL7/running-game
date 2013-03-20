@@ -4,8 +4,8 @@
 (provide MakeFile)
 
 
-(define (MakeFile name #:log [-log (MakeLogger)])
-  (let ((-path (string-append "resources/" -name ".txt")))
+(define (MakeFile -name #:log [-log (MakeLogger)])
+  (let ((-path (string-append kPathPrefix -name kPathSuffix)))
     (define (File msg . args)
       (case msg
         ((read)   (apply read-data args))
@@ -15,14 +15,16 @@
     (define dispatch File)
 
     (define (read-data)
-      (let* ((in  (open-input-file path))
+      (-log 'warn "reading from disk" dispatch -name)
+      (let* ((in  (open-input-file -path))
              (res (read in)))
         (close-input-port in)
         res))
 
-    (define (write-data . values)
-      (let ((out (open-output-file path #:exists 'replace)))
-        (write values out)
+    (define (write-data value)
+      (-log 'warn "writing to disk" dispatch -name)
+      (let ((out (open-output-file -path #:exists 'replace)))
+        (write value out)
         (close-output-port out)
         dispatch))
 
@@ -31,4 +33,6 @@
     dispatch))
 
 
-(define kNullValue '())
+(define kNullValue  '())
+(define kPathPrefix "resources/")
+(define kPathSuffix ".txt")

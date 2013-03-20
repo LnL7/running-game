@@ -1,6 +1,7 @@
 #lang racket/base
 (require "lib/canvas.rkt"
          "logger.rkt"
+         "file.rkt"
          "menu.rkt"
          "world.rkt"
          "level.rkt"
@@ -19,15 +20,20 @@
         (-display (MakeDisplay #:log -log))
         (-physics (MakePhysics #:log -log))
         (-input   (MakeInput #:log -log))
+        (-files   (vector
+                    (MakeFile kDefaultLevel #:log -log)
+                    (MakeFile kSpeedyLevel #:log -log)))
         (-levels  (vector
-                    (MakeDefaultLevel #:log -log)
-                    (MakeSpeedyLevel #:log -log))))
+                    (MakeLevel #:log -log)
+                    (MakeLevel #:log -log))))
     (define (Game msg . args)
       (case msg
-        ((end)   (apply end args))
-        ((start) (apply start args))
-        ((menu)  (apply menu args))
-        ((world) (apply world args))
+        ((files)  -files)
+        ((levels) -levels)
+        ((end)    (apply end args))
+        ((start)  (apply start args))
+        ((menu)   (apply menu args))
+        ((world)  (apply world args))
         (else
           (-log 'fatal "method missing" msg dispatch))))
     (define dispatch Game)
@@ -42,7 +48,9 @@
           (next-level!)
           (set! -state 'menu)
           (set! -world #f)
-          (set! -menu  (MakeMenu score #:log -log))))
+          (set! -menu  (MakeMenu score #:log -log))
+          (each-file (lambda (file level) ;; write level data
+                       (file 'write! (level 'encode))))))
       dispatch)
 
     (define (world)
@@ -89,6 +97,17 @@
                      (+ -level 1)
                      (vector-length -levels))))
 
+    (define (each-file proc!)
+      (let --iter ((ctr (- (vector-length -files) 1)))
+        (cond
+          ((< ctr 0) #t)
+          (else
+            (let ((file  (vector-ref -files ctr))
+                  (level (vector-ref -levels ctr)))
+              (proc! file level)
+              (--iter (- ctr 1)))))))
+
+    (each-file (lambda (file level) (level 'decode (file 'read)))) ;; read level data
     (-physics 'game! dispatch)
     (-input 'game! dispatch)
     (-input 'world)
@@ -101,3 +120,5 @@
 (define (scale-helper delta) (/ delta 100))
 
 (define kDefaultLevelIndex 0)
+(define kDefaultLevel "level-default")
+(define kSpeedyLevel "level-speedy")

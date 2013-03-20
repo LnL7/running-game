@@ -19,6 +19,8 @@
         ((offset!)  (apply set-offset! args))
         ((include?) (apply is-included? args))
         ((random)   (apply generate-random args))
+        ((encode)   (apply encode args))
+        ((decode)   (apply decode args))
         (else
           (-log 'fatal "method missing" msg dispatch))))
     (define dispatch Range)
@@ -37,10 +39,18 @@
     (define (generate-random)
       (+ -offset (random (+ -length 1)) -from))
 
+    (define (encode) ;; Serialize object to a Vector
+      (vector 'range -from -to))
+
+    (define (decode vect) ;; Deserialize object from a Vector
+      (unless (eq? (vector-ref vect 0) 'range) (-log 'warn "wrong encoded vector for" dispatch))
+      (set-from! (vector-ref vect 1))
+      (set-to!   (vector-ref vect 2)))
+
     ;; Private
     (define (update) ;; updates calculated properties
       (set! -length (- -to -from))
-      (when (< -length 0) (-log 'fatal "not a valid range" 'update dispatch)))
+      (when (< -length 0) (-log 'warn "not a valid range" 'update dispatch)))
 
     (update)
     (-log 'debug "initialized" dispatch)

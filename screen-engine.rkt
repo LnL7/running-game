@@ -59,4 +59,4 @@
 
 (define kMessages '(rectangle ellipse image score text))
 (define kFontFace "Verdana")
-(define kFontSize 64)
+(define kFontSize 32)

@@ -13,8 +13,8 @@
         ((highest) -highest)
         ((add)     (apply add-current args))
         ((end)     (apply end-current args))
-        ((->)      (apply encode args))
-        ((<-)      (apply decode args))
+        ((encode)  (apply encode args))
+        ((decode)  (apply decode args))
         (else
           (-log 'fatal "method missing" msg dispatch))))
     (define dispatch Score)
@@ -27,9 +27,12 @@
         (set! -highest -current))
       (set! -current 0))
 
-    (define (encode) (vector -current -highest))
+    (define (encode)
+      (vector 'score
+              -highest))
+
     (define (decode vect)
-      (set! -current (vector-ref vect 0))
+      (unless (eq? (vector-ref vect 0) 'score) (-log 'warn "wrong encoded vector for" dispatch))
       (set! -highest (vector-ref vect 1)))
 
     ;; Private

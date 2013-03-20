@@ -11,7 +11,6 @@
         (velocity       (MakeVelocity 1 2)))
     (check-eq? (velocity 'horizontal) 1)
     (check-eq? (velocity 'vertical) 2)
-    (check-not-exn (lambda () (velocity 'render display-engine)))
     (check-exn
       exn:fail?
       (lambda () (velocity 'foobar)))))

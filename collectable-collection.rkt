@@ -43,7 +43,7 @@
             (--iter)))))
 
     ;; Private
-    (define (cleanup collectable)
+    (define (cleanup collectable) ;; Remove collectables if they are offscreen
       (when (and
               (eq? (-collection 'peek) collectable)
               (< (chain collectable 'position 'y) (-level 'collectable-cleanup-offset)))
