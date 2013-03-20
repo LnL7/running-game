@@ -5,18 +5,15 @@
 (provide MakeMenu)
 
 
-
-(define (MakeMenu score #:log [-log (MakeLogger)])
+(define (MakeMenu -score #:log [-log (MakeLogger)])
   (let ((-message-proc #f)
-        (-score-proc   #f)
-        (-score        score))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((render) render)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+        (-score-proc   #f))
+    (define (Menu msg . args)
+      (case msg
+        ((render) (apply render args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Menu)
 
     (define (render engine)
       (unless -message-proc (set! -message-proc (engine 'text kMessage kMessagePosition kColor)))
@@ -25,11 +22,8 @@
       (-score-proc)
       dispatch)
 
-
     ;; Private
-
-    (-log 'debug "initialized" kClass)
-
+    (-log 'debug "initialized" dispatch)
     dispatch))
 
 
@@ -37,7 +31,6 @@
   (number->string (score 'current)))
 
 
-(define kClass           'Menu)
 (define kMessagePosition (MakePosition 250 400))
 (define kScorePosition   (MakePosition 400 300))
 (define kMessage         "Game Over!")

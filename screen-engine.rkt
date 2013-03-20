@@ -6,18 +6,16 @@
          (rename-out [kMessages kScreenEngineMessages]))
 
 
-
 (define (MakeScreenEngine #:log [-log (MakeLogger)])
-  (define (dispatch msg . args)
-    (apply
-      (case msg
-        ((rectangle) shape-rectangle)
-        ((ellipse)   shape-ellipse)
-        ((image)     shape-image)
-        ((text)      text)
-        (else
-          (lambda args (-log 'warn "method missing" msg kClass))))
-      args))
+  (define (ScreenEngine msg . args)
+    (case msg
+      ((rectangle) (apply shape-rectangle args))
+      ((ellipse)   (apply shape-ellipse args))
+      ((image)     (apply shape-image args))
+      ((text)      (apply text args))
+      (else
+        (lambda args (-log 'warn "method missing" msg dispatch)))))
+  (define dispatch ScreenEngine)
 
   (define (shape-rectangle rectangle)
     (let ((width  (rectangle 'width))
@@ -54,15 +52,11 @@
               (y    (pos 'y)))
           (draw-text! x y message (find-color color-name) font)))))
 
-
   ;; Private
-
-  (-log 'debug "initialized" kClass)
-
+  (-log 'debug "initialized" dispatch)
   dispatch)
 
 
-(define kClass    'ScreenEngine)
 (define kMessages '(rectangle ellipse image score text))
 (define kFontFace "Verdana")
 (define kFontSize 64)

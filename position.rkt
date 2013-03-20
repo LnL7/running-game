@@ -4,24 +4,21 @@
 (provide MakePosition)
 
 
-
-(define (MakePosition x y #:log [-log (MakeLogger)])
-  (let ((-x x)
-        (-y y))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((x)        get-x)
-          ((y)        get-y)
-          ((x!)       set-x!)
-          ((y!)       set-y!)
-          ((distance) calculate-distance)
-          ((copy)     copy-position)
-          ((move!)    move-velocity!)
-          ((render)   render)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+(define (MakePosition -x -y #:log [-log (MakeLogger)])
+  (let ()
+    (define (Position msg . args)
+      (case msg
+        ((x)        -x)
+        ((y)        -y)
+        ((x!)       (apply set-x! args))
+        ((y!)       (apply set-y! args))
+        ((distance) (apply calculate-distance args))
+        ((copy)     (apply copy-position args))
+        ((move!)    (apply move-velocity! args))
+        ((render)   (apply render args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Position)
 
     (define (get-x) -x)
     (define (get-y) -y)
@@ -44,12 +41,6 @@
     (define (render engine)
       (engine 'position dispatch))
 
-
     ;; Private
-
-    ; (-log 'debug "initialized" kClass)
-
+    ; (-log 'debug "initialized" dispatch)
     dispatch))
-
-
-(define kClass 'Position)

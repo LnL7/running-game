@@ -7,14 +7,13 @@
 
 
 (define (MakeUpdateEngine #:log [-log (MakeLogger)])
-  (define (dispatch msg . args)
-    (apply
-      (case msg
-        ((rectangle) shape-rectangle)
-        ((gravity)   gravity)
-        (else
-          (-log 'fatal "method missing" msg kClass)))
-      args))
+  (define (UpdateEngine msg . args)
+    (case msg
+      ((rectangle) (apply shape-rectangle args))
+      ((gravity)   (apply gravity args))
+      (else
+        (-log 'fatal "method missing" msg dispatch))))
+  (define dispatch UpdateEngine)
 
   (define (shape-rectangle delta rectangle velocity)
     (let ((pos (rectangle 'position))
@@ -30,10 +29,6 @@
       (velocity 'add! (gravity 'scale! (* mass delta)))
       dispatch))
 
-
   ;; Private
-  (-log 'debug "initialized" kClass)
+  (-log 'debug "initialized" dispatch)
   dispatch)
-
-
-(define kClass 'UpdateEngine)

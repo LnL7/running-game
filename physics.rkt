@@ -8,26 +8,24 @@
 (provide MakePhysics)
 
 
-
 (define (MakePhysics #:log [-log (MakeLogger)])
   (let ((-game      #f)
         (-player    #f)
         (-level     #f)
         (-update    (MakeUpdateEngine #:log -log))
         (-collision (MakeCollisionEngine #:log -log)))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((game!)     set-game!)
-          ((level!)    set-level!)
-          ((player!)   set-player!)
-          ((rectangle) shape-rectangle)
-          ((gravity)   gravity)
-          ((reset)     reset)
-          ((collide)   collide)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+    (define (Physics msg . args)
+      (case msg
+        ((game!)     (apply set-game! args))
+        ((level!)    (apply set-level! args))
+        ((player!)   (apply set-player! args))
+        ((rectangle) (apply shape-rectangle args))
+        ((gravity)   (apply gravity args))
+        ((reset)     (apply reset args))
+        ((collide)   (apply collide args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Physics)
 
     (define (set-game! game)     (set! -game game))
     (define (set-level! level)   (set! -level level))
@@ -54,8 +52,5 @@
 
 
     ;; Private
-    (-log 'debug "initialized" kClass)
+    (-log 'debug "initialized" dispatch)
     dispatch))
-
-
-(define kClass 'Physics)

@@ -13,16 +13,15 @@
   (let ((-level      #f)
         (-offset     kNullPosition)
         (-collection (MakeQueue kSize #:log -log)))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((level!)  set-level!)
-          ((render)  render)
-          ((update!) update!)
-          ((fill!)   fill-collection!)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+    (define (ObstacleCollection msg . args)
+      (case msg
+        ((level!)  (apply set-level! args))
+        ((render)  (apply render args))
+        ((update!) (apply update! args))
+        ((fill!)   (apply fill-collection! args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch ObstacleCollection)
 
     (define (set-level! level) (set! -level level))
 
@@ -46,7 +45,6 @@
             (-collection 'enqueue! (MakeRandomObstacle -offset speed size x y #:log -log))
             (--iter)))))
 
-
     ;; Private
     (define (cleanup obstacle)
       (when (and
@@ -58,10 +56,9 @@
         (fill-collection!)))
 
     ;; Private
-    (-log 'debug "initialized" kClass)
+    (-log 'debug "initialized" dispatch)
     dispatch))
 
 
-(define kClass        'ObstacleCollection)
 (define kSize         5)
 (define kNullPosition (MakePosition 0 0))

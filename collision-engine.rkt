@@ -8,14 +8,13 @@
 
 
 (define (MakeCollisionEngine #:log [-log (MakeLogger)])
-  (define (dispatch msg . args)
-    (apply
-      (case msg
-        ((collide) collide)
-        ((reset)   player-reset)
-        (else
-          (-log 'fatal "method missing" msg kClass)))
-      args))
+  (define (CollisionEngine msg . args)
+    (case msg
+      ((collide) (apply collide args))
+      ((reset)   (apply player-reset args))
+      (else
+        (-log 'fatal "method missing" msg dispatch))))
+  (define dispatch CollisionEngine)
 
   (define (collide delta bounce-range game player collide! width height position)
     (define (menu!) (game 'menu) #f)
@@ -63,11 +62,10 @@
       (< (position 'x)        (+ (player-position 'x) player-size))
       (< (position 'y)        (+ (player-position 'y) player-size))))
 
-  (-log 'debug "initialized" kClass)
+  (-log 'debug "initialized" dispatch)
   dispatch)
 
 
-(define kClass        'CollisionEngine)
 (define kLeft         0)
 (define kRight        750)
 (define kBottom       0)

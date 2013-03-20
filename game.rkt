@@ -22,16 +22,15 @@
         (-levels  (vector
                     (MakeDefaultLevel #:log -log)
                     (MakeSpeedyLevel #:log -log))))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((end)   end)
-          ((start) start)
-          ((menu)  menu)
-          ((world) world)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+    (define (Game msg . args)
+      (case msg
+        ((end)   (apply end args))
+        ((start) (apply start args))
+        ((menu)  (apply menu args))
+        ((world) (apply world args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Game)
 
     (define (end)   (stop-game-loop))
     (define (start) (start-game-loop game-loop #t))
@@ -69,7 +68,6 @@
           (collectables 'fill!)))
       dispatch)
 
-
     ;; Private
     (define (game-loop delta)
       (let ((percentage (scale-helper delta)))
@@ -77,7 +75,7 @@
           ((menu)  (menu-loop delta))
           ((world) (world-loop delta))
           (else
-            (-log 'fatal "invalid state" -state kClass)))))
+            (-log 'fatal "invalid state" -state dispatch)))))
 
     (define (world-loop delta)
       (-world 'render -display)
@@ -95,12 +93,11 @@
     (-input 'game! dispatch)
     (-input 'world)
     (world)
-    (-log 'debug "initialized" kClass)
+    (-log 'debug "initialized" dispatch)
     dispatch))
 
 
 ;; (time-delta -> percentage)
 (define (scale-helper delta) (/ delta 100))
 
-(define kClass             'Game)
 (define kDefaultLevelIndex 0)

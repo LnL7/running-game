@@ -16,30 +16,24 @@
         (-size          kSize)
         (-position      position)
         (-velocity      (kNullVelocity 'copy)))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((size)     get-size)
-          ((position) get-position)
-          ((velocity) get-velocity)
-          ((jumping?) get-jumping?)
-          ((jumping!) set-jumping!)
-          ((bounce?)  get-bouncing?)
-          ((bounce!)  set-bouncing!)
-          ((collide!) collide!)
-          ((reset!)   reset!)
-          ((render)   render)
-          ((update!)  update!)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+    (define (Player msg . args)
+      (case msg
+        ((size)     -size)
+        ((position) -position)
+        ((velocity) -velocity)
+        ((jumping?) -is-jumping)
+        ((bounce?)  -is-bouncing)
+        ((jumping!) (apply set-jumping! args))
+        ((bounce!)  (apply set-bouncing! args))
+        ((collide!) (apply collide! args))
+        ((reset!)   (apply reset! args))
+        ((render)   (apply render args))
+        ((update!)  (apply update! args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Player)
 
-    (define (get-size)             -size)
-    (define (get-position)         -position)
-    (define (get-velocity)         -velocity)
-    (define (get-jumping?)         -is-jumping)
     (define (set-jumping! jump)    (set! -is-jumping jump))
-    (define (get-bouncing?)        -is-bouncing)
     (define (set-bouncing! bounce) (set! -is-bouncing bounce))
 
     (define (collide!)
@@ -69,11 +63,10 @@
     (define (get-is-jumping?) -is-jumping)
     (define (start-jumping) (set! -is-jumping #t))
 
-    (-log 'debug "initialized" kClass)
+    (-log 'debug "initialized" dispatch)
     dispatch))
 
 
-(define kClass        'Player)
 (define kNullVelocity (MakeVelocity 0 0))
 (define kSize         50)
 (define kDefaultPath  "resources/player1.png")

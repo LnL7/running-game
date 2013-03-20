@@ -15,25 +15,19 @@
     (MakeCollectable pos vel kSize #:log -log)))
 
 
-(define (MakeCollectable position velocity size #:log [-log (MakeLogger)])
+(define (MakeCollectable -position -velocity -size #:log [-log (MakeLogger)])
   (let ((-display-shape #f)
         (-physics-shape #f)
         (-gravity-proc  #f)
-        (-collide-proc  #f)
-        (-size          size)
-        (-velocity      velocity)
-        (-position      position))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((position) get-position)
-          ((render)   render)
-          ((update!)  update!)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
-
-    (define (get-position) -position)
+        (-collide-proc  #f))
+    (define (Collectable msg . args)
+      (case msg
+        ((position) -position)
+        ((render)   (apply render args))
+        ((update!)  (apply update! args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Collectable)
 
     (define (render engine)
       (unless -display-shape (set! -display-shape (MakeEllipse -position -size -size kColor #:log -log)))
@@ -52,14 +46,13 @@
       (lambda (menu!) ;; soft and hard collisions
         (score!)
         (-display-shape 'color! kCollideColor)
-        (-log 'debug "score!" kClass)
+        (-log 'debug "score!" dispatch)
         #f)) ;; collision done
 
-; (-log 'debug "initialized" kClass)
-dispatch))
+    ; (-log 'debug "initialized" dispatch)
+    dispatch))
 
 
-(define kClass        'Collectable)
 (define kSize         10)
 (define kColor        "yellow")
 (define kCollideColor "red")

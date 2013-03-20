@@ -11,23 +11,18 @@
   (let ((-player       (MakePlayer (kPlayerPosition 'copy) #:log -log))
         (-obstacles    (MakeObstacleCollection #:log -log))
         (-collectables (MakeCollectableCollection #:log -log)))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((player)       get-player)
-          ((obstacles)    get-obstacles)
-          ((collectables) get-collectables)
-          ((render)       render)
-          ((update!)      update!)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+    (define (World msg . args)
+      (case msg
+        ((player)       -player)
+        ((obstacles)    -obstacles)
+        ((collectables) -collectables)
+        ((render)       (apply render args))
+        ((update!)      (apply update! args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch World)
 
     ;; Properties
-    (define (get-player)       -player)
-    (define (get-obstacles)    -obstacles)
-    (define (get-collectables) -collectables)
-
     (define (render . args)
       (let ((msg 'render))
         (apply -player msg args)
@@ -41,8 +36,8 @@
         (apply -collectables msg args)))
 
     ;; Private
+    (-log 'debug "initialized" dispatch)
     dispatch))
 
 
-(define kClass          'World)
 (define kPlayerPosition (MakePosition 200 200))

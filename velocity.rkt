@@ -5,26 +5,20 @@
 
 
 
-(define (MakeVelocity horizontal vertical #:log [-log (MakeLogger)])
-  (let ((-horizontal horizontal)
-        (-vertical   vertical))
+(define (MakeVelocity -horizontal -vertical #:log [-log (MakeLogger)])
+  (let ()
     (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((horizontal)  get-horizontal)
-          ((vertical)    get-vertical)
-          ((horizontal!) set-horizontal!)
-          ((vertical!)   set-vertical!)
-          ((copy)        copy-velocity)
-          ((scale!)      scale-number!)
-          ((add!)        add-velocity!)
-          ((render)      render)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
-
-    (define (get-horizontal) -horizontal)
-    (define (get-vertical)   -vertical)
+      (case msg
+        ((horizontal)  -horizontal)
+        ((vertical)    -vertical)
+        ((horizontal!) (apply set-horizontal! args))
+        ((vertical!)   (apply set-vertical! args))
+        ((copy)        (apply copy-velocity args))
+        ((scale!)      (apply scale-number! args))
+        ((add!)        (apply add-velocity! args))
+        ((render)      (apply render args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
 
     (define (set-horizontal! horizontal) (set! -horizontal horizontal))
     (define (set-vertical! vertical)     (set! -vertical vertical))
@@ -45,10 +39,6 @@
     (define (render engine)
       (engine 'velocity dispatch))
 
-
     ;; Private
-    ; (-log 'debug "initialized" kClass)
+    ; (-log 'debug "initialized" dispatch)
     dispatch))
-
-
-(define kClass 'Velocity)

@@ -9,18 +9,17 @@
 (define (MakeInput #:log [-log (MakeLogger)])
   (let ((-game  #f)
         (-level #f))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((game!)  set-game!)
-          ((level!) set-level!)
-          ((world)  world-start)
-          ((jump)   player-jump)
-          ((strafe) player-strafe)
-          ((slide)  player-slide)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+    (define (Input msg . args)
+      (case msg
+        ((game!)  (apply set-game! args))
+        ((level!) (apply set-level! args))
+        ((world)  (apply world-start args))
+        ((jump)   (apply player-jump args))
+        ((strafe) (apply player-strafe args))
+        ((slide)  (apply player-slide args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Input)
 
     ;; Properties
     (define (set-game! game)   (set! -game game))
@@ -54,8 +53,5 @@
       (on-key! #\s slide))
 
     ;; Private
-    (-log 'debug "initialized" kClass)
+    (-log 'debug "initialized" dispatch)
     dispatch))
-
-
-(define kClass 'Input)

@@ -10,18 +10,13 @@
 (define (MakeDisplay #:log [-log (MakeLogger)])
   (let ((-screen  (MakeScreenEngine #:log -log))
         (-console (MakeConsoleEngine #:log -log)))
-    (define (dispatch msg . args)
+    (define (Display msg . args)
       (apply
         (if (memq msg kScreenEngineMessages) -screen -console)
         msg
         args))
-
+    (define dispatch Display)
 
     ;; Private
-
-    (-log 'debug "initialized" kClass)
-
+    (-log 'debug "initialized" dispatch)
     dispatch))
-
-
-(define kClass 'Display)

@@ -17,23 +17,18 @@
     (MakeObstacle pos vel width height #:log -log)))
 
 
-(define (MakeObstacle position velocity width height #:log [-log (MakeLogger)])
+(define (MakeObstacle -position -velocity -width -height #:log [-log (MakeLogger)])
   (let ((-display-shape #f)
         (-physics-shape #f)
-        (-collide-proc  #f)
-        (-position      position)
-        (-velocity      velocity)
-        (-width         width)
-        (-height        height))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((position) get-position)
-          ((render)   render)
-          ((update!)  update!)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+        (-collide-proc  #f))
+    (define (Obstacle msg . args)
+      (case msg
+        ((position) -position)
+        ((render)   (apply render args))
+        ((update!)  (apply update! args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Obstacle)
 
     (define (render engine)
       (unless -display-shape (set! -display-shape (MakeRectangle -position -width -height kColor #:log -log)))
@@ -45,8 +40,6 @@
       (-collide-proc delta)
       (-physics-shape 'update! delta engine -velocity))
 
-    (define (get-position) -position)
-
     ;; Private
     (define (collide! menu!)
       (cond
@@ -56,10 +49,9 @@
           (-display-shape 'color! kCollideColor)
           #t))) ;; check collisions again
 
-    ; (-log 'debug "initialized" kClass -position -width -height)
+    ; (-log 'debug "initialized" dispatch)
     dispatch))
 
 
-(define kClass        'Obstacle)
 (define kColor        "black")
 (define kCollideColor "gray")
