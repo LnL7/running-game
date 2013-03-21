@@ -1,6 +1,6 @@
 #lang racket/base
 (require "logger.rkt"
-         "lib/canvas.rkt"
+         "lib/canvas.rkt" ;; Library created by Sam Vervaeck
          "helpers.rkt")
 (provide MakeScreenEngine
          (rename-out [kMessages kScreenEngineMessages]))

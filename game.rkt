@@ -1,5 +1,5 @@
 #lang racket/base
-(require "lib/canvas.rkt"
+(require "lib/canvas.rkt" ;; Library Created by Sam Vervaeck
          "logger.rkt"
          "file.rkt"
          "menu.rkt"
@@ -43,12 +43,11 @@
 
     (define (menu)
       (unless (eq? -state 'menu)
-        (let* ((level (vector-ref -levels -level))
-               (score (level 'score)))
+        (let ((level (vector-ref -levels -level)))
           (next-level!)
           (set! -state 'menu)
           (set! -world #f)
-          (set! -menu  (MakeMenu score #:log -log))
+          (set! -menu  (MakeMenu level #:log -log))
           (each-file (lambda (file level) ;; write level data
                        (file 'write! (level 'encode))))))
       dispatch)
