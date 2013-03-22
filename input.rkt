@@ -17,6 +17,7 @@
         ((jump)   (apply player-jump args))
         ((strafe) (apply player-strafe args))
         ((slide)  (apply player-slide args))
+        ((character) (apply player-character args))
         (else
           (-log 'fatal "method missing" msg dispatch))))
     (define dispatch Input)
@@ -51,6 +52,12 @@
       (define (slide)  (player 'bounce! #f))
       (on-key! 'down slide)
       (on-key! #\s slide))
+
+    (define (player-character player)
+      (define (one) (player 'character! 1))
+      (define (two) (player 'character! 2))
+      (on-key! #\1 one)
+      (on-key! #\2 two))
 
     ;; Private
     (-log 'debug "initialized" dispatch)

@@ -99,6 +99,7 @@
         ((collectable-y)                -cy)
         ((collectable-cleanup-offset)   -ccleanup)
         ((collectable-generate-offset)  -cgenerate)
+        ((player-path)                  (apply player-path args))
         ((name!)                        (apply set-name! args))
         ((friction!)                    (apply set-friction! args))
         ((gravity!)                     (apply set-gravity! args))
@@ -123,6 +124,17 @@
         (else
           (-log 'fatal "method missing" msg dispatch))))
     (define dispatch Level)
+
+    (define (player-path idx ref)
+      (cond
+        ((and (eq? idx 1) (eq? ref 'a)) kPlayerPath1a)
+        ((and (eq? idx 1) (eq? ref 'b)) kPlayerPath1b)
+        ((and (eq? idx 1) (eq? ref 'c)) kPlayerPath1c)
+        ((and (eq? idx 2) (eq? ref 'a)) kPlayerPath2a)
+        ((and (eq? idx 2) (eq? ref 'b)) kPlayerPath2b)
+        ((and (eq? idx 2) (eq? ref 'c)) kPlayerPath2c)
+        (else
+          (-log 'warn "missing player-path id" dispatch))))
 
     (define (set-name! name)           (set! -name name))
     (define (set-friction! friction)   (set! -friction friction))
@@ -198,3 +210,9 @@
 (define kNullNumber   0)
 (define kNullRange    (MakeRange 0 0))
 (define kNullVelocity (MakeVelocity 0 0))
+(define kPlayerPath1a "resources/player1a.png")
+(define kPlayerPath1b "resources/player1b.png")
+(define kPlayerPath1c "resources/player1c.png")
+(define kPlayerPath2a "resources/player2a.png")
+(define kPlayerPath2b "resources/player2b.png")
+(define kPlayerPath2c "resources/player2b.png")

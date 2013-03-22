@@ -47,10 +47,11 @@
     ;; Private
     (define (collide score!)
       (lambda (menu!) ;; soft and hard collisions
-        (set! -animation #f) ;; Stop animation
-        (score!)
-        ; (-display-shape 'color! kCollideColor)
-        (-log 'debug "score!" dispatch)
+        (when -animation
+          (set! -animation #f) ;; Stop animation
+          (score!) (score!) (score!) (score!) (score!) ;; 5 times
+          (-velocity 'vertical! kCollideBounce)
+          (-log 'debug "score!" dispatch))
         #f)) ;; collision done
 
     (define (animate)
@@ -75,7 +76,8 @@
 
 (define (path-helper idx) (string-append kPath (number->string idx) ".png"))
 
-(define kSize         10)
-(define kPath         "resources/coin")
-(define kPathMax      3)
-(define kAnimateSpeed 1)
+(define kSize          10)
+(define kPath          "resources/coin")
+(define kPathMax       3)
+(define kAnimateSpeed  1)
+(define kCollideBounce 10)
