@@ -24,6 +24,7 @@
 (define (MakeShape type position width height [color-or-path kColor] #:log [-log (MakeLogger)])
   (let ((-render-proc   #f)
         (-update-proc   #f)
+        (-update?       #f)
         (-type          type)
         (-position      position)
         (-width         width)
@@ -46,11 +47,12 @@
     (define dispatch Shape)
 
     (define (set-color-or-path! color-or-path)
+      (set! -update? #t)
       (set! -color-or-path color-or-path))
 
     (define (render engine)
       (unless -render-proc (set! -render-proc (engine -type dispatch)))
-      (-render-proc))
+      (-render-proc -update?))
 
     (define (update! delta engine velocity)
       (unless -update-proc (set! -update-proc (engine -type dispatch velocity)))

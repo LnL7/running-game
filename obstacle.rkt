@@ -54,4 +54,4 @@
 
 
 (define kColor        "black")
-(define kCollideColor "gray")
+(define kCollideColor "green")

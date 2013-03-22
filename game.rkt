@@ -2,6 +2,7 @@
 (require "lib/canvas.rkt" ;; Library Created by Sam Vervaeck
          "logger.rkt"
          "file.rkt"
+         "background.rkt"
          "menu.rkt"
          "world.rkt"
          "level.rkt"
@@ -13,14 +14,15 @@
 
 
 (define (MakeGame #:log [-log (MakeLogger)])
-  (let ((-state   #f)
-        (-menu    #f)
-        (-world   #f)
-        (-levels  #f)
-        (-level   kDefaultLevelIndex)
-        (-display (MakeDisplay #:log -log))
-        (-physics (MakePhysics #:log -log))
-        (-input   (MakeInput #:log -log))
+  (let ((-state      #f)
+        (-menu       #f)
+        (-world      #f)
+        (-levels     #f)
+        (-level      kDefaultLevelIndex)
+        (-input      (MakeInput #:log -log))
+        (-display    (MakeDisplay #:log -log))
+        (-physics    (MakePhysics #:log -log))
+        (-background (MakeBackground #:log -log))
         (-files   (vector ;; serialized levels
                     (MakeFile kDefaultLevel #:log -log)
                     (MakeFile kSpeedyLevel #:log -log)
@@ -66,6 +68,8 @@
           (-input 'strafe player)
           (-input 'jump player)
           (-input 'slide player)
+          (-input 'character player)
+          (player 'level! level)
           (obstacles 'level! level)
           (obstacles 'fill!)
           (collectables 'level! level)
@@ -81,11 +85,15 @@
           (else
             (-log 'fatal "invalid state" -state dispatch)))))
 
+    (define grass (make-image "resources/grass.jpg"))
+
     (define (world-loop delta)
+      (-background 'render -display)
       (-world 'render -display)
       (-world 'update! (scale-helper delta) -physics))
 
     (define (menu-loop delta)
+      (-background 'render -display)
       (-menu 'render -display)
       (-menu 'update!))
 
