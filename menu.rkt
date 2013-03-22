@@ -5,7 +5,7 @@
 (provide MakeMenu)
 
 
-(define (MakeMenu -level #:log [-log (MakeLogger)])
+(define (MakeMenu -level -file #:log [-log (MakeLogger)])
   (let ((-level-message-proc #f)
         (-level-name-proc    #f)
         (-score-message-proc #f)
@@ -15,7 +15,8 @@
         (-new-proc           #f))
     (define (Menu msg . args)
       (case msg
-        ((render) (apply render args))
+        ((render)  (apply render args))
+        ((update!) (apply update! args))
         (else
           (-log 'fatal "method missing" msg dispatch))))
     (define dispatch Menu)
@@ -27,8 +28,10 @@
       (unless -high-message-proc  (set! -high-message-proc  (engine 'text kHighMessage kHighMessgePosition kColor)))
       (unless -score-proc         (set! -score-proc         (engine 'text (number->string ((-level 'score) 'current)) kScorePosition kColor)))
       (unless -high-proc          (set! -high-proc          (engine 'text (number->string ((-level 'score) 'highest)) kHighPosition kColor)))
-      (unless -new-proc           (set! -new-proc           (when (eq? ((-level 'score) 'current) ((-level 'score) 'highest))
-                                                              (engine 'text kNewMessage kNewMessagePosition kColor))))
+      (unless -new-proc           (set! -new-proc           (if (> ((-level 'score) 'current) ((-level 'score) 'highest))
+                                                              (engine 'text kNewMessage kNewMessagePosition kColor)
+                                                              (lambda () #f))))
+
       (-level-message-proc)
       (-level-name-proc)
       (-score-message-proc)
@@ -38,9 +41,17 @@
       (-new-proc)
       dispatch)
 
-    ;; Private
-    (-log 'debug "initialized" dispatch)
-    dispatch))
+    (define (update!) (when score-update (score-update)))
+
+    (define (score-update)
+      ((-level 'score) 'end)
+      (-file 'write! (-level 'encode))
+      (set! score-update #f))
+
+  ;; Private
+
+  (-log 'debug "initialized" dispatch)
+  dispatch))
 
 
 (define (score-helper score)

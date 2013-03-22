@@ -15,5 +15,6 @@ tags:
 
 clean:
 	rm -f resources/*.txt
+	git checkout HEAD -- resources/level-*
 	find . -name "*~" -exec rm -f {} \;
 	find . -name compiled -exec rm -rf {} \;
