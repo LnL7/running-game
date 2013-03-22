@@ -23,7 +23,8 @@
         (-input   (MakeInput #:log -log))
         (-files   (vector ;; serialized levels
                     (MakeFile kDefaultLevel #:log -log)
-                    (MakeFile kSpeedyLevel #:log -log))))
+                    (MakeFile kSpeedyLevel #:log -log)
+                    (MakeFile kSlowLevel #:log -log))))
     (define (Game msg . args)
       (case msg
         ((files)  -files)
@@ -121,3 +122,4 @@
 (define kDefaultLevelIndex 0)
 (define kDefaultLevel "level-default")
 (define kSpeedyLevel "level-speedy")
+(define kSlowLevel "level-slow")
