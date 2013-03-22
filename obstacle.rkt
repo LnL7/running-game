@@ -7,33 +7,28 @@
          MakeRandomObstacle)
 
 
+(define (MakeRandomObstacle offset speed size x y #:log [-log (MakeLogger)])
+  (x 'offset! (offset 'x))
+  (let ((width  (size 'random))
+        (height (size 'random))
+        (vel    (MakeVelocity (speed 'random) 0 #:log -log))
+        (pos    (MakePosition (x 'random) (y 'random) #:log -log)))
+    (offset 'x! (pos 'x))
+    (MakeObstacle pos vel width height #:log -log)))
 
-(define (MakeRandomObstacle offset #:log [-log (MakeLogger)])
-  (let* ((y      (+ (random kMaxY) kMinY))
-         (x      (+ (random kMaxX) (offset 'x) kMinX))
-         (width  (+ (random kMaxSize) kMinSize))
-         (height (+ (random kMaxSize) kMinSize))
-         (pos    (MakePosition x y #:log -log)))
-    (offset 'x! x)
-    (MakeObstacle pos width height #:log -log)))
 
-
-(define (MakeObstacle position width height #:log [-log (MakeLogger)])
+(define (MakeObstacle -position -velocity -width -height #:log [-log (MakeLogger)])
   (let ((-display-shape #f)
         (-physics-shape #f)
-        (-collide-proc  #f)
-        (-position      position)
-        (-width         width)
-        (-height        height))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((position) get-position)
-          ((render)   render)
-          ((update!)  update!)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+        (-collide-proc  #f))
+    (define (Obstacle msg . args)
+      (case msg
+        ((position) -position)
+        ((render)   (apply render args))
+        ((update!)  (apply update! args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Obstacle)
 
     (define (render engine)
       (unless -display-shape (set! -display-shape (MakeRectangle -position -width -height kColor #:log -log)))
@@ -41,32 +36,22 @@
 
     (define (update! delta engine)
       (unless -physics-shape (set! -physics-shape (MakeRectangle -position -width -height #:log -log)))
-      (unless -collide-proc  (set! -collide-proc  (engine 'collide set-color! -width -height -position)))
+      (unless -collide-proc  (set! -collide-proc  (engine 'collide collide! -width -height -position)))
       (-collide-proc delta)
-      (-physics-shape 'update! delta engine kVelocity))
-
-    (define (get-position) -position)
-
+      (-physics-shape 'update! delta engine -velocity))
 
     ;; Private
+    (define (collide! menu!)
+      (cond
+        (menu! (menu!)) ;; exit to menu on hard collision
+        (else ;; soft collision
+          (-velocity 'vertical! (-velocity 'horizontal)) ;; Start falling
+          (-display-shape 'color! kCollideColor)
+          #t))) ;; check collisions again
 
-    (define (set-color! color)
-      (-display-shape 'color! color))
-
-
-    ; (-log 'debug "initialized" kClass -position -width -height)
-
+    ; (-log 'debug "initialized" dispatch)
     dispatch))
 
 
-
-(define kClass    'Obstacle)
-(define kVelocity (MakeVelocity -10 0))
-(define kColor    "black")
-
-(define kMaxSize 200)
-(define kMinSize 50)
-(define kMaxX    800)
-(define kMaxY    300)
-(define kMinX    100)
-(define kMinY    0)
+(define kColor        "black")
+(define kCollideColor "gray")

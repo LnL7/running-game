@@ -29,49 +29,36 @@
         (-width         width)
         (-height        height)
         (-color-or-path color-or-path))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((type)     get-type)
-          ((position) get-position)
-          ((width)    get-width)
-          ((height)   get-height)
-          ((color)    get-color-or-path)
-          ((path)     get-color-or-path)
-          ((color!)   set-color-or-path!)
-          ((path!)    set-color-or-path!)
-          ((render)   render)
-          ((update!)  update!)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
-
-    (define (get-type)     -type)
-    (define (get-position) -position)
-    (define (get-width)    -width)
-    (define (get-height)   -height)
-
-    (define (get-color-or-path)
-      -color-or-path)
+    (define (Shape msg . args)
+      (case msg
+        ((type)     -type)
+        ((position) -position)
+        ((width)    -width)
+        ((height)   -height)
+        ((color)    -color-or-path)
+        ((path)     -color-or-path)
+        ((color!)   (apply set-color-or-path! args))
+        ((path!)    (apply set-color-or-path! args))
+        ((render)   (apply render args))
+        ((update!)  (apply update! args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Shape)
 
     (define (set-color-or-path! color-or-path)
       (set! -color-or-path color-or-path))
 
     (define (render engine)
-      (unless -render-proc (set! -render-proc (engine type dispatch)))
+      (unless -render-proc (set! -render-proc (engine -type dispatch)))
       (-render-proc))
 
     (define (update! delta engine velocity)
-      (unless -update-proc (set! -update-proc (engine type dispatch velocity)))
+      (unless -update-proc (set! -update-proc (engine -type dispatch velocity)))
       (-update-proc delta))
 
-
     ;; Private
-
-    ; (-log 'debug "initialized" kClass)
-
+    ; (-log 'debug "initialized" dispatch)
     dispatch))
 
 
-(define kClass 'Shape)
 (define kColor "white")

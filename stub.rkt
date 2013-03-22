@@ -4,13 +4,12 @@
 (provide MakeStub)
 
 
-
 (define (MakeStub #:log [-log (MakeLogger)] . -methods)
-  (define (dispatch msg . args)
+  (define (Stub msg . args)
     (apply
       (let --iter ((lst -methods))
         (if (null? lst)
-          (-log 'fatal "method missing" msg kClass)
+          (-log 'fatal "method missing" msg dispatch)
           (let ((head (car lst)))
             (cond
               ((eq? msg head)       stub)
@@ -18,12 +17,11 @@
               (else
                 (--iter (cdr lst)))))))
       args))
-
+  (define dispatch Stub)
 
   (define (stub . args) #t)
 
   ;; Private
-
   (define (method msg lst)
     (and
       (pair? lst)
@@ -33,9 +31,5 @@
           res
           (lambda args res)))))
 
-  (-log 'debug "initialized" kClass)
-
+  (-log 'debug "initialized" dispatch)
   dispatch)
-
-
-(define kClass 'Stub)

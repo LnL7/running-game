@@ -7,13 +7,9 @@
 
 (test-case
   "Score"
-  (let* ((score       (MakeScore))
-         (engine-proc (lambda args (lambda args #t)))
-         (engine-mock (MakeMock (list 'score engine-proc))))
+  (let ((score (MakeScore)))
     (check-eq? (score 'current) 0)
     (check-eq? (score 'highest) 0)
-    (score 'render engine-mock)
-    (check-equal? (engine-mock 'messages) '(score))
     (check-exn
       exn:fail?
       (lambda () (score 'foobar)))))

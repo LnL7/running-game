@@ -4,41 +4,25 @@
 (provide MakeQueue)
 
 
-
 (define (MakeQueue size #:log [-log (MakeLogger)])
-  (let* ((-size  (+ size 1))
-         (-first 0)
+  (let* ((-first 0)
          (-last  0)
-         (-store (make-vector (+ size 1) 'null-queue-element)))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((enqueue!) enqueue-element!)
-          ((serve!)   serve-element!)
-          ((peek)     peek-element)
-          ((each)     each-element)
-          ((empty?)   is-empty?)
-          ((full?)    is-full?)
-          (else
-            (-log 'fatal "method missing" msg kClass)))
-        args))
+         (-size  (+ size 1))
+         (-store (make-vector (+ size 1) kNullElement)))
+    (define (Queue msg . args)
+      (case msg
+        ((empty?)   (apply is-empty? args))
+        ((full?)    (apply is-full? args))
+        ((peek)     (apply peek-element args))
+        ((each)     (apply each-element args))
+        ((enqueue!) (apply enqueue-element! args))
+        ((serve!)   (apply serve-element! args))
+        (else
+          (-log 'fatal "method missing" msg dispatch))))
+    (define dispatch Queue)
 
-    (define (enqueue-element! elem)
-      (if (is-full?)
-        (-log 'warn "to a full queue" 'enqueue! elem)
-        (begin
-          (vector-set! -store -last elem)
-          (set! -last (next-ref -last))
-          ; (-log 'debug "increased last-ref to" kClass -last)
-          #t)))
-
-    (define (serve-element!)
-      (if (is-empty?)
-        (-log 'warn "to an empty queue" 'serve!)
-        (let ((elem (vector-ref -store -first)))
-          (set! -first (next-ref -first))
-          ; (-log 'debug "increased first-ref to" kClass -first)
-          elem)))
+    (define (is-empty?) (eq? -last -first))
+    (define (is-full?)  (eq? (next-ref -last) -first))
 
     (define (peek-element)
       (if (is-empty?)
@@ -52,21 +36,28 @@
           (proc (vector-ref -store ctr))
           (--iter (next-ref ctr)))))
 
-    (define (is-empty?)
-      (eq? -last -first))
+    (define (enqueue-element! elem)
+      (if (is-full?)
+        (-log 'warn "to a full queue" 'enqueue! elem)
+        (begin
+          (vector-set! -store -last elem)
+          (set! -last (next-ref -last))
+          ; (-log 'debug "increased last-ref to" dispatch -last)
+          #t)))
 
-    (define (is-full?)
-      (eq? (next-ref -last) -first))
-
+    (define (serve-element!)
+      (if (is-empty?)
+        (-log 'warn "to an empty queue" 'serve!)
+        (let ((elem (vector-ref -store -first))) ;; get and return first
+          (vector-set! -store -first kNullElement) ;; Remove actual reference
+          (set! -first (next-ref -first))
+          ; (-log 'debug "increased first-ref to" dispatch -first)
+          elem)))
 
     ;; Private
-
-    (define (next-ref ref)
-      (modulo (+ ref 1) -size))
-
-    ; (-log 'debug "initialized" kClass)
-
+    (define (next-ref ref) (modulo (+ ref 1) -size))
+    ; (-log 'debug "initialized" dispatch)
     dispatch))
 
 
-(define kClass 'Queue)
+(define kNullElement 'queue-null-element)

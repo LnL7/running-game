@@ -7,16 +7,14 @@
 
 
 (define (MakeUpdateEngine #:log [-log (MakeLogger)])
-  (define (dispatch msg . args)
-    (apply
-      (case msg
-        ((rectangle) shape-rectangle)
-        ((gravity)   gravity)
-        (else
-          (-log 'fatal "method missing" msg kClass)))
-      args))
+  (define (UpdateEngine msg . args)
+    (case msg
+      ((rectangle) (apply shape-rectangle args))
+      ((gravity)   (apply gravity args))
+      (else
+        (-log 'fatal "method missing" msg dispatch))))
+  (define dispatch UpdateEngine)
 
-  ;; (percentage shape-rectangle velocity -> self)
   (define (shape-rectangle delta rectangle velocity)
     (let ((pos (rectangle 'position))
           (vel (velocity 'copy)))
@@ -24,22 +22,13 @@
       (pos 'move! vel)
     dispatch))
 
-  ;; (percentage position velocity -> self)
-  (define (gravity delta position velocity)
+  (define (gravity delta mass friction gravity position velocity)
     (let ((vel     (velocity 'copy))
-          (gravity (kGravityVelocity 'copy)))
-      (velocity 'add! (vel 'scale! (/ delta kFriction)))
-      (velocity 'add! (gravity 'scale! delta))
+          (gravity (gravity 'copy)))
+      (velocity 'add! (vel 'scale! (/ delta friction)))
+      (velocity 'add! (gravity 'scale! (* mass delta)))
       dispatch))
 
-
   ;; Private
-
-  (-log 'debug "initialized" kClass)
-
+  (-log 'debug "initialized" dispatch)
   dispatch)
-
-
-(define kClass           'UpdateEngine)
-(define kGravityVelocity (MakeVelocity 0 (* -0.94 4)))
-(define kFriction        -10)

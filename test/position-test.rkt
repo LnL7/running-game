@@ -12,7 +12,6 @@
         (position       (MakePosition 1 2)))
     (check-eq? (position 'x) 1)
     (check-eq? (position 'y) 2)
-    (check-not-exn (lambda () (position 'render display-engine)))
     (check-exn
       exn:fail?
       (lambda () (position 'foobar)))))

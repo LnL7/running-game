@@ -7,18 +7,17 @@
 
 (define (MakeConsoleEngine #:log [-log (MakeLogger)])
   (let ((-scope 0))
-    (define (dispatch msg . args)
-      (apply
-        (case msg
-          ((rectangle) shape-rectangle)
-          ((ellipse)   shape-ellipse)
-          ((position)  position)
-          ((velocity)  velocity)
-          ((image)     shape-image)
-          ((score)     score)
-          (else
-            (-log 'warn "method missing" msg kClass)))
-        args))
+    (define (ConsoleEngine msg . args)
+      (case msg
+        ((rectangle) (apply shape-rectangle args))
+        ((ellipse)   (apply shape-ellipse args))
+        ((position)  (apply position args))
+        ((velocity)  (apply velocity args))
+        ((image)     (apply shape-image args))
+        ((score)     (apply score args))
+        (else
+          (-log 'warn "method missing" msg dispatch))))
+    (define dispatch ConsoleEngine)
 
     (define (shape-ellipse ellipse)
       (lambda ()
@@ -89,9 +88,7 @@
           (display high)
           (dedent!))))
 
-
     ;; Private
-
     (define (shape shape)
       (let ((pos    (shape 'position))
             (width  (shape 'width))
@@ -116,9 +113,5 @@
     (define (indent!) (set! -scope (+ -scope 1)))
     (define (dedent!) (set! -scope (- -scope 1)))
 
-    (-log 'debug "initialized" kClass)
-
+    (-log 'debug "initialized" dispatch)
     dispatch))
-
-
-(define kClass 'ConsoleEngine)

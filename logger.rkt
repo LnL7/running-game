@@ -5,15 +5,14 @@
 
 
 (define (MakeLogger #:debug [-debug #f] #:warn [-warn #t] #:fatal [-fatal #t])
-  (define (dispatch msg . args)
-    (apply
-      (case msg
-        ((debug) debug)
-        ((warn)  warning)
-        ((fatal) fatal)
-        (else
-          (lambda args (warning "method missing" msg kClass))))
-      args))
+  (define (Logger msg . args)
+    (case msg
+      ((debug) (apply debug args))
+      ((warn)  (apply warning args))
+      ((fatal) (apply fatal args))
+      (else
+        (lambda args (warning "method missing" msg dispatch)))))
+  (define dispatch Logger)
 
   (define (debug message sym . args)
     (cond
@@ -46,9 +45,7 @@
       (else
         (error sym (string-append message " ~a") args))))
 
-
   ;; Private
-
   (define (puts args)
     (unless (null? args)
       (display ", ")
@@ -56,6 +53,3 @@
       (puts (cdr args))))
 
   dispatch)
-
-
-(define kClass 'Logger)

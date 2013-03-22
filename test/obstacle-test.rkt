@@ -8,7 +8,8 @@
 (test-case
   "Obstacle"
   (let* ((pos         (MakePosition 1 2))
-         (obstacle    (MakeObstacle pos 100 50))
+         (vel         (MakeVelocity 1 2))
+         (obstacle    (MakeObstacle pos vel 100 50))
          (engine-proc (lambda args (lambda args #t)))
          (engine-mock (MakeMock
                         (list 'rectangle engine-proc)
