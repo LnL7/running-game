@@ -14,11 +14,15 @@
         ((y)       -y)
         ((x!)      (apply x! args))
         ((y!)      (apply y! args))
+        ((render!) (apply render! args))
         (else    (-mdtr 'emit 'Point.NoMethod msg dispatch))))
     (define dispatch Point)
 
     (define (x! x) (set! -x x) Nil)
     (define (y! y) (set! -y y) Nil)
+
+    (define (render! . args)
+      (apply -mdtr 'emit 'Point.Render -x -y args))
 
     ;; Private
     (-mdtr 'emit 'Point.Initialized dispatch)
